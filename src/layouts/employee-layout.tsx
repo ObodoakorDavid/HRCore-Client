@@ -1,3 +1,4 @@
+import Breadcrumb from "@/components/bread-crumb";
 import EmpployeeSidebar from "@/components/employee-sidebar";
 import { Outlet } from "react-router-dom";
 
@@ -7,6 +8,7 @@ export default function EmployeeLayout() {
       <EmpployeeSidebar />
       <div className="flex-1 bg-gray-100 p-4">
         <div className=" max-w-5xl">
+          <Breadcrumb />
           <Outlet />
         </div>
       </div>

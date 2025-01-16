@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"; // Adjust based on your shadcn 
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
 import { useTenantActions } from "@/store/useTenantStore";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type TenantIdFormInputs = {
   tenantId: string;
@@ -17,11 +17,10 @@ type LoginFormInputs = {
 
 export default function TenantLogin() {
   const [isTenantValid, setIsTenantValid] = useState(false);
-  const [tenantId, setTenantId] = useState("");
 
   const navigate = useNavigate();
 
-  const { getTenant, tenantLogin } = useTenantActions();
+  const { validateTenant, tenantLogin } = useTenantActions();
 
   // Tenant ID Form
   const {
@@ -41,8 +40,7 @@ export default function TenantLogin() {
     console.log(data.tenantId);
 
     try {
-      await getTenant(data.tenantId, () => {
-        setTenantId(data.tenantId);
+      await validateTenant(data.tenantId, () => {
         setIsTenantValid(true);
       });
     } catch (error) {
@@ -82,9 +80,7 @@ export default function TenantLogin() {
               required: "Tenant ID is required",
             })}
             placeholder="Enter your Tenant ID"
-            className={`w-full ${
-              tenantErrors.tenantId ? "border-red-500" : ""
-            }`}
+            className="w-full"
           />
           {tenantErrors.tenantId && (
             <p className="text-red-500 text-sm mt-1">
@@ -122,7 +118,7 @@ export default function TenantLogin() {
                 },
               })}
               placeholder="Enter your email"
-              className={`w-full ${loginErrors.email ? "border-red-500" : ""}`}
+              className="w-full"
             />
             {loginErrors.email && (
               <p className="text-red-500 text-sm mt-1">
@@ -145,9 +141,7 @@ export default function TenantLogin() {
                 },
               })}
               placeholder="Enter your password"
-              className={`w-full ${
-                loginErrors.password ? "border-red-500" : ""
-              }`}
+              className="w-full"
             />
             {loginErrors.password && (
               <p className="text-red-500 text-sm mt-1">
@@ -160,6 +154,11 @@ export default function TenantLogin() {
           </Button>
         </form>
       )}
+      <div className="pt-4 text-end">
+        <Link to="/tenant/forgot-password" className="font-semibold underline">
+          Forgot Password?
+        </Link>
+      </div>
     </div>
   );
 }

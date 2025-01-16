@@ -1,6 +1,7 @@
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function AcceptInvite() {
   const [searchParams] = useSearchParams();
@@ -24,7 +25,8 @@ export default function AcceptInvite() {
     }
 
     const onSuccess = () => {
-      navigate(`/${tenantId}/signin`, { replace: true });
+      toast.success("Invite Accepted!");
+      navigate(`/signin`, { replace: true });
     };
 
     const onError = (message: string) => {

@@ -3,42 +3,9 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios.config";
 import { isAxiosError } from "axios";
 import { NavigateFunction } from "react-router-dom";
+import { EmployeeSetFunction, EmployeeState } from "@/types/employee.types";
 
-interface EmployeeState {
-  employee: any;
-  isFetchingEmployee: boolean;
-  isSubmitting: boolean;
-  actions: {
-    employeeSignup: (
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    employeeSignin: (
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getEmployee: (
-      navigate: NavigateFunction,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    acceptInvite: (
-      data: { [key: string]: any },
-      onSuccess?: () => void,
-      onError?: (message: string) => void
-    ) => Promise<void>;
-    logout: (navigate: NavigateFunction, onSuccess?: () => void) => void;
-  };
-}
-
-interface SetFunction {
-  (
-    state:
-      | Partial<EmployeeState>
-      | ((state: EmployeeState) => Partial<EmployeeState>)
-  ): void;
-}
-
-const actions = (set: SetFunction) => ({
+const actions = (set: EmployeeSetFunction) => ({
   employeeSignup: async (data: Record<string, any>, onSuccess?: () => void) => {
     set({ isSubmitting: true });
     try {
@@ -59,7 +26,7 @@ const actions = (set: SetFunction) => ({
         isSubmitting: false,
       }));
 
-      toast.success(`SignUp successfull`);
+      toast.success(`SignUp successful`);
       if (onSuccess) {
         onSuccess();
       }
@@ -67,9 +34,9 @@ const actions = (set: SetFunction) => ({
       console.log(error);
       set({ isSubmitting: false });
       if (isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to log in ");
+        toast.error(error.response?.data?.message || "Failed to sign up");
       } else {
-        toast.error("Failed to log in");
+        toast.error("Failed to sign up");
       }
     }
   },
@@ -81,8 +48,10 @@ const actions = (set: SetFunction) => ({
       const response = await axiosInstance.post(`/employee/auth/signin`, data);
       const token = response?.data?.data?.token;
       const employee = response?.data?.data?.employee;
+      const tenantId = response?.data?.data?.employee?.tenantId;
 
       localStorage.setItem("token", token);
+      localStorage.setItem("tenant-id", tenantId);
 
       set((state: EmployeeState) => ({
         ...state,
@@ -90,7 +59,7 @@ const actions = (set: SetFunction) => ({
         isSubmitting: false,
       }));
 
-      toast.success(`SignIn successfull`);
+      toast.success(`SignIn successful`);
       if (onSuccess) {
         onSuccess();
       }
@@ -98,9 +67,9 @@ const actions = (set: SetFunction) => ({
       console.log(error);
       set({ isSubmitting: false });
       if (isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to log in ");
+        toast.error(error.response?.data?.message || "Failed to sign in");
       } else {
-        toast.error("Failed to log in");
+        toast.error("Failed to sign in");
       }
     }
   },
@@ -109,8 +78,6 @@ const actions = (set: SetFunction) => ({
     try {
       const response = await axiosInstance.get(`/employee/auth`);
       const employee = response?.data?.data?.employee;
-
-      console.log("Employee Details:", employee);
 
       set((state: EmployeeState) => ({
         ...state,
@@ -124,8 +91,7 @@ const actions = (set: SetFunction) => ({
     } catch (error: unknown) {
       console.log(error);
       set({ employee: null, isFetchingEmployee: false });
-      const tenantId = localStorage.getItem("tenant-id");
-      navigate(`/${tenantId}/signin`);
+      navigate(`/signin`);
     } finally {
       set({ isFetchingEmployee: false });
     }
@@ -136,8 +102,7 @@ const actions = (set: SetFunction) => ({
       ...state,
       employee: null,
     }));
-    const tenantId = localStorage.getItem("tenant-id");
-    navigate(`/${tenantId}/signin`);
+    navigate(`/login`);
     toast.success("Logged out successfully");
 
     if (onSuccess) {
@@ -145,7 +110,7 @@ const actions = (set: SetFunction) => ({
     }
   },
 
-  //Invites
+  // Invites
   acceptInvite: async (
     data: { [key: string]: any },
     onSuccess?: () => void,
@@ -181,6 +146,65 @@ const actions = (set: SetFunction) => ({
       }
     } finally {
       set({ isSubmitting: false });
+    }
+  },
+
+  // Forgot Password
+  forgotPassword: async (email: string, onSuccess?: () => void) => {
+    set({ isSubmitting: true });
+    try {
+      const response = await axiosInstance.post(
+        `/employee/auth/forgot-password`,
+        {
+          email,
+        }
+      );
+
+      toast.success("Password reset link sent to your email.");
+      set({ isSubmitting: false });
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      set({ isSubmitting: false });
+      if (isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to send reset email"
+        );
+      } else {
+        toast.error("Failed to send reset email");
+      }
+    }
+  },
+
+  // Reset Password
+  resetPassword: async (
+    data: { token: string; password: string },
+    onSuccess?: () => void
+  ) => {
+    set({ isSubmitting: true });
+    try {
+      const response = await axiosInstance.post(
+        `/employee/auth/reset-password`,
+        data
+      );
+
+      toast.success("Password reset successfully.");
+      set({ isSubmitting: false });
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      set({ isSubmitting: false });
+      if (isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to reset password"
+        );
+      } else {
+        toast.error("Failed to reset password");
+      }
     }
   },
 });

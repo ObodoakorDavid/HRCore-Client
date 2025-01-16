@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button"; // Adjust based on your shadcn setup
 import { Label } from "@radix-ui/react-label";
 import { Input } from "@/components/ui/input";
+import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
+import { useNavigate } from "react-router-dom";
 
 type LoginFormInputs = {
   email: string;
@@ -12,11 +14,19 @@ export default function AdminLogin() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormInputs>();
 
-  const onSubmit = (data: LoginFormInputs) => {
+  const { isSubmitting } = useAdminStore();
+  const { loginAdmin } = useAdminActions();
+
+  const navigate = useNavigate();
+
+  const onSubmit = async (data: LoginFormInputs) => {
     console.log("Login Data:", data);
+    await loginAdmin(data, () => {
+      navigate("/dashboard/admin");
+    });
     // Perform login action (e.g., API call)
   };
 
@@ -58,8 +68,8 @@ export default function AdminLogin() {
             {...register("password", {
               required: "Password is required",
               minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters long",
+                value: 5,
+                message: "Password must be at least 5 characters long",
               },
             })}
             placeholder="Enter your password"

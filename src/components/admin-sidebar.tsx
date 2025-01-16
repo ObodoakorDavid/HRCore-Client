@@ -1,10 +1,11 @@
-import { Home, User, LogOut, ChevronDown, Settings } from "lucide-react";
+import { Home, Users, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
+import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
+// import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
 
 interface Submenu {
   name: string;
@@ -22,35 +23,23 @@ interface Route {
 const routes: Route[] = [
   {
     name: "Dashboard",
-    path: "/dashboard/employee",
+    path: "/dashboard/admin",
     icon: <Home className="w-5 h-5" />,
   },
   {
-    name: "Leave",
-    path: "/dashboard/employee/leave",
-    icon: <User className="w-5 h-5" />,
-  },
-  {
-    name: "Profile",
-    path: "/dashboard/employee/profile",
-    icon: <User className="w-5 h-5" />,
+    name: "Tenants",
+    path: "/dashboard/admin/tenants",
+    icon: <Users className="w-5 h-5" />,
+    // submenu: [],
   },
 ];
 
-// const bottomRoutes: Route[] = [
-//   {
-//     name: "Settings",
-//     path: "/dashboard/settings",
-//     icon: <Settings className="w-5 h-5" />,
-//   },
-// ];
-
-export default function EmployeeSidebar() {
+export default function AdminSidebar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  const { logout } = useEmployeeActions();
-  const { employee } = useEmployeeStore();
+  const { logout } = useAdminActions();
+  const { admin } = useAdminStore();
 
   const navigate = useNavigate();
 
@@ -73,7 +62,7 @@ export default function EmployeeSidebar() {
     >
       {/* Logo Section */}
       <div className="p-4 border-b">
-        <h1 className="text-lg font-bold">Employee Dashboard</h1>
+        <h1 className="text-lg font-bold">Admin Dashboard</h1>
       </div>
 
       {/* Navigation Links */}
@@ -142,26 +131,7 @@ export default function EmployeeSidebar() {
         </ul>
       </nav>
 
-      {/* <div className="px-4 flex-end">
-        <Separator className="my-2" />
-        <ul className="space-y-2">
-          {bottomRoutes.map((route, index) => (
-            <li key={index}>
-              <Link
-                to={route.path}
-                className={cn(
-                  "flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                  isActive(route.path) && "bg-gray-200 text-gray-900"
-                )}
-              >
-                {route.icon}
-                <span>{route.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div> */}
-
+      {/* Profile Section */}
       <div className="relative">
         <Separator className="my-2" />
         <div
@@ -169,23 +139,23 @@ export default function EmployeeSidebar() {
           onClick={toggleProfileDropdown}
         >
           <div>
-            <p className="text-sm text-gray-500">{employee.name}</p>
-            <p className="font-semibold text-sm">{employee.email}</p>
-            {/* <p className="text-sm text-gray-500">{employee.position}</p> */}
+            <p className="font-semibold text-sm">{admin.email}</p>
+            <p className="text-sm text-gray-500">{admin.role}</p>
           </div>
         </div>
 
         {profileDropdownOpen && (
           <div className="absolute bottom-16 w-full p-4 bg-white border shadow-md rounded-md">
             <div>
-              <p className="font-semibold">{employee.name}</p>
-              <p className="text-sm text-gray-500">{employee.position}</p>
-              <p className="text-sm text-gray-500">{employee.email}</p>
+              <p className="font-semibold">{admin.name}</p>
+              <p className="text-sm text-gray-500">{admin.role}</p>
+              <p className="text-sm text-gray-500">{admin.email}</p>
             </div>
           </div>
         )}
       </div>
 
+      {/* Logout Section */}
       <div className="pb-6">
         <Separator className="my-2" />
         <Button

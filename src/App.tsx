@@ -9,13 +9,22 @@ import TenantDashboard from "./pages/tenant/tenant-dashboard";
 import Employee from "./pages/tenant/employee";
 import EmployeeInvites from "./pages/tenant/employee-invites";
 import EmployeeRegister from "./pages/employee/employee-register";
-import EmployeeSignin from "./pages/employee/employee-signin";
 import EmployeeLayout from "./layouts/employee-layout";
 import EmployeeDashboard from "./pages/employee/employee-dashboard";
 import EmployeeGuard from "./guards/employee-guard";
 import AcceptInvite from "./pages/employee/accept-invite";
-import EmployeeDetail from "./pages/tenant/employee-detail";
 import EmployeeRoles from "./pages/tenant/employee-roles";
+import AdminLogin from "./pages/admin/admin-login";
+import AdminGuard from "./guards/admin-guard";
+import AdminLayout from "./layouts/admin-layout";
+import Tenants from "./pages/admin/tenants";
+import EmployeeProfile from "./pages/employee/employee-profile";
+import EmployeeUpdate from "./pages/tenant/employee-update";
+import EmployeeForgotPassword from "./pages/employee/employee-forgot-password";
+import EmployeeLogin from "./pages/employee/employee-login";
+import EmployeeResetPassword from "./pages/employee/employee-reset-password";
+import TenantForgotPassword from "./pages/tenant/tenant-forgot-password";
+import TenantResetPassword from "./pages/tenant/tenant-reset-password";
 
 function App() {
   const router = createBrowserRouter([
@@ -23,9 +32,18 @@ function App() {
       path: "/",
       element: <div>Home</div>,
     },
+    //Tenant Routes
     {
       path: "/tenant/login",
       element: <TenantLogin />,
+    },
+    {
+      path: "/tenant/forgot-password",
+      element: <TenantForgotPassword />,
+    },
+    {
+      path: "/tenant/reset-password",
+      element: <TenantResetPassword />,
     },
     {
       path: "/dashboard/tenant",
@@ -58,6 +76,7 @@ function App() {
         },
       ],
     },
+    //Eemployee Routes
     {
       path: "/invite/:tenantId/:token/:email",
       element: <EmployeeRegister />,
@@ -78,48 +97,56 @@ function App() {
               element: <div>Leave management</div>,
             },
             {
-              path: ":employeeId",
-              element: <EmployeeDetail />,
+              path: "profile",
+              element: <EmployeeProfile />,
             },
+            {
+              path: "profile/update",
+              element: <EmployeeUpdate />,
+            },
+            // {
+            //   path: ":employeeId",
+            //   element: <EmployeeDetail />,
+            // },
           ],
         },
       ],
     },
     {
-      path: "/signin",
-      element: <EmployeeSignin />,
+      path: "/login",
+      element: <EmployeeLogin />,
+    },
+    {
+      path: "/forgot-password",
+      element: <EmployeeForgotPassword />,
+    },
+    {
+      path: "/reset-password",
+      element: <EmployeeResetPassword />,
     },
     {
       path: "/:tenantId/verify",
       element: <AcceptInvite />,
     },
-    //Admin
+    //Admin Routes
+    {
+      path: "/admin/login",
+      element: <AdminLogin />,
+    },
     {
       path: "/dashboard/admin",
-      element: <TenantGuard />,
+      element: <AdminGuard />,
       children: [
         {
-          element: <TenantLayout />,
+          element: <AdminLayout />,
           children: [
             {
               path: "",
-              element: <TenantDashboard />,
+              element: <div>Admin Home</div>,
             },
             {
-              path: "profile",
-              element: <TenantProfile />,
-            },
-            {
-              path: "employee",
-              element: <Employee />,
-            },
-            {
-              path: "employee/invite",
-              element: <EmployeeInvites />,
-            },
-            {
-              path: "employee/roles",
-              element: <EmployeeRoles />,
+              path: "tenants",
+              element: <Tenants />,
             },
           ],
         },

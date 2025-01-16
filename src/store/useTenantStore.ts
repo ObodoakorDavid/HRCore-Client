@@ -3,64 +3,10 @@ import { toast } from "sonner";
 import axiosInstance from "@/lib/axios.config";
 import { isAxiosError } from "axios";
 import { NavigateFunction } from "react-router-dom";
+import { TenantSetFunction, TenantState } from "@/types/tenant.types";
 
-interface TenantState {
-  tenant: any | null;
-  invites: [{ [key: string]: any }];
-  employees: [{ [key: string]: any }];
-  isFetchingTenant: boolean;
-  isLoading: boolean;
-  isSubmitting: boolean;
-  pagination: {
-    totalCount: number;
-    totalPages: number;
-    currentPage: number;
-    perPage: number;
-  };
-  actions: {
-    getTenant: (tenantId: string, onSuccess?: () => void) => Promise<void>;
-    tenantLogin: (
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getTenantDetails: (
-      navigate: NavigateFunction,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    sendInviteLink: (
-      data: { [key: string]: any },
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getAllLinks: (
-      params: {
-        page?: number | string;
-        limit?: number | string;
-        [key: string]: any;
-      },
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getAllEmployees: (
-      params: {
-        page?: number | string;
-        limit?: number | string;
-        [key: string]: any;
-      },
-      onSuccess?: () => void
-    ) => Promise<void>;
-    bulkInvite: (data: { file: File }, onSuccess?: () => void) => Promise<void>;
-  };
-}
-
-interface SetFunction {
-  (
-    state: Partial<TenantState> | ((state: TenantState) => Partial<TenantState>)
-  ): void;
-}
-
-const actions = (set: SetFunction) => ({
-  getTenant: async (tenantId: string, onSuccess?: () => void) => {
-    console.log(tenantId);
-
+const actions = (set: TenantSetFunction) => ({
+  validateTenant: async (tenantId: string, onSuccess?: () => void) => {
     set({ isFetchingTenant: true });
     try {
       const response = await axiosInstance.get(`/tenant/${tenantId}`);
@@ -70,19 +16,17 @@ const actions = (set: SetFunction) => ({
 
       set((state: TenantState) => ({
         ...state,
-        tenant,
         isFetchingTenant: false,
       }));
 
-      localStorage.setItem("tenant-id", tenantId);
-      toast.success(`Tenant ID ${tenantId} validated successfully!`);
+      toast.success(`Tenant ID validated successfully!`);
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: unknown) {
       console.log(error);
-      set({ tenant: null, isFetchingTenant: false }); // If error, reset tenant and stop fetching
+      set({ isFetchingTenant: false }); // If error, reset tenant and stop fetching
       if (isAxiosError(error)) {
         toast.error(error.response?.data?.message || "Failed to validate id");
       } else {
@@ -96,7 +40,7 @@ const actions = (set: SetFunction) => ({
   tenantLogin: async (data: Record<string, any>, onSuccess?: () => void) => {
     set({ isFetchingTenant: true });
     try {
-      const response = await axiosInstance.post(`/tenant/signin`, data);
+      const response = await axiosInstance.post(`/tenant/auth/signin`, data);
       const token = response?.data?.data?.token;
       const tenant = response?.data?.data?.tenant;
 
@@ -127,13 +71,10 @@ const actions = (set: SetFunction) => ({
     }
   },
 
-  getTenantDetails: async (
-    navigate: NavigateFunction,
-    onSuccess?: () => void
-  ) => {
+  getTenant: async (navigate: NavigateFunction, onSuccess?: () => void) => {
     set({ isFetchingTenant: true });
     try {
-      const response = await axiosInstance.get(`/tenant`);
+      const response = await axiosInstance.get(`/tenant/auth`);
       const tenant = response?.data?.data;
 
       console.log("Tenant Details:", tenant);
@@ -297,6 +238,65 @@ const actions = (set: SetFunction) => ({
       set({ isSubmitting: false });
     }
   },
+
+  // Forgot Password
+  forgotPassword: async (email: string, onSuccess?: () => void) => {
+    set({ isSubmitting: true });
+    try {
+      const response = await axiosInstance.post(
+        `/tenant/auth/forgot-password`,
+        { email }
+      );
+
+      console.log("Forgot Password Response:", response?.data);
+      toast.success("Password reset link sent successfully!");
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      if (isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to send password reset link"
+        );
+      } else {
+        toast.error("Failed to send password reset link");
+      }
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+  // Reset Password
+  resetPassword: async (
+    data: { token: string; password: string },
+    onSuccess?: () => void
+  ) => {
+    set({ isSubmitting: true });
+    try {
+      const response = await axiosInstance.post(
+        `/tenant/auth/reset-password`,
+        data
+      );
+
+      toast.success("Password reset successfully!");
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      if (isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Failed to reset password"
+        );
+      } else {
+        toast.error("Failed to reset password");
+      }
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
 });
 
 // Create Zustand Store with type checking for state
@@ -305,14 +305,14 @@ export const useTenantStore = create<TenantState>((set) => ({
   invites: [{}],
   employees: [{}],
   isLoading: false,
+  isFetchingTenant: false,
+  isSubmitting: false,
   pagination: {
     totalCount: 0,
     totalPages: 0,
     currentPage: 0,
     perPage: 0,
   },
-  isFetchingTenant: false,
-  isSubmitting: false,
   actions: actions(set),
 }));
 

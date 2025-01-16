@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios";
 
 const apiUrl: string =
-// import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1";
-  import.meta.env.VITE_API_URL || "http://localhost:8081/api/v1";
+import.meta.env.VITE_API_URL || "http://localhost:8080/api/v1";
+  // import.meta.env.VITE_API_URL || "http://localhost:8081/api/v1";
 
 const axiosInstance = axios.create({
   baseURL: apiUrl,
