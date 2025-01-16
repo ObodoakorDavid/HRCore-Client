@@ -1,7 +1,7 @@
 import { useEmployeeStore } from "@/store/useEmployeeStore";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 interface UpdateFormInputs {
   name: string;
@@ -11,7 +11,7 @@ interface UpdateFormInputs {
 
 export default function EmployeeUpdate() {
   const { employee } = useEmployeeStore();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { register, handleSubmit } = useForm<UpdateFormInputs>({
     defaultValues: {
       name: employee.name,
@@ -20,10 +20,10 @@ export default function EmployeeUpdate() {
     },
   });
 
-  const onSubmit = (data: UpdateFormInputs) => {
-    // updateEmployee(data); // Function to update the employee in the store or backend
-    navigate("/dashboard/employee/profile");
-  };
+  // const onSubmit = (data: UpdateFormInputs) => {
+  //   // updateEmployee(data); // Function to update the employee in the store or backend
+  //   navigate("/dashboard/employee/profile");
+  // };
 
   return (
     <div className="max-w-3xl mx-auto">

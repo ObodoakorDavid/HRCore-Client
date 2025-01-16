@@ -61,13 +61,13 @@ export default function RolesTable() {
     setDebouncedSearch(e.target.value);
   };
 
-  const handleDeleteRole = async (id: string) => {
-    toast("Delete functionality not implemented yet!");
-    // Uncomment below to enable delete functionality
-    // await deleteRole(id, () => {
-    //   getAllRoles({ page: 1, limit: 10 });
-    // });
-  };
+  // const handleDeleteRole = async (id: string) => {
+  //   toast("Delete functionality not implemented yet!");
+  //   // Uncomment below to enable delete functionality
+  //   // await deleteRole(id, () => {
+  //   //   getAllRoles({ page: 1, limit: 10 });
+  //   // });
+  // };
 
   console.log(roles);
 

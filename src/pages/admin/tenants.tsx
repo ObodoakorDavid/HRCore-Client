@@ -15,7 +15,7 @@ interface Tenant {
 
 export default function Tenants() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { tenants, pagination, isSubmitting } = useAdminStore();
+  const { tenants, isSubmitting } = useAdminStore();
   const { getTenants, addTenant } = useAdminActions();
 
   useEffect(() => {

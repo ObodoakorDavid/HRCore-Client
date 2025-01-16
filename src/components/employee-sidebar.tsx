@@ -1,4 +1,4 @@
-import { Home, User, LogOut, ChevronDown, Settings } from "lucide-react";
+import { Home, User, LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";

@@ -153,12 +153,9 @@ const actions = (set: EmployeeSetFunction) => ({
   forgotPassword: async (email: string, onSuccess?: () => void) => {
     set({ isSubmitting: true });
     try {
-      const response = await axiosInstance.post(
-        `/employee/auth/forgot-password`,
-        {
-          email,
-        }
-      );
+      await axiosInstance.post(`/employee/auth/forgot-password`, {
+        email,
+      });
 
       toast.success("Password reset link sent to your email.");
       set({ isSubmitting: false });
@@ -185,10 +182,7 @@ const actions = (set: EmployeeSetFunction) => ({
   ) => {
     set({ isSubmitting: true });
     try {
-      const response = await axiosInstance.post(
-        `/employee/auth/reset-password`,
-        data
-      );
+      await axiosInstance.post(`/employee/auth/reset-password`, data);
 
       toast.success("Password reset successfully.");
       set({ isSubmitting: false });
