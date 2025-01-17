@@ -274,10 +274,7 @@ const actions = (set: TenantSetFunction) => ({
   ) => {
     set({ isSubmitting: true });
     try {
-      const response = await axiosInstance.post(
-        `/tenant/auth/reset-password`,
-        data
-      );
+      axiosInstance.post(`/tenant/auth/reset-password`, data);
 
       toast.success("Password reset successfully!");
 
