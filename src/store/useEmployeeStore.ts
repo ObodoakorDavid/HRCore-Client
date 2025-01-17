@@ -79,6 +79,9 @@ const actions = (set: EmployeeSetFunction) => ({
       const response = await axiosInstance.get(`/employee/auth`);
       const employee = response?.data?.data?.employee;
 
+      console.log(employee);
+      
+
       set((state: EmployeeState) => ({
         ...state,
         employee,

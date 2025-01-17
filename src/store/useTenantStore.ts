@@ -24,6 +24,7 @@ const actions = (set: TenantSetFunction) => ({
       if (onSuccess) {
         onSuccess();
       }
+      return tenant;
     } catch (error: unknown) {
       console.log(error);
       set({ isFetchingTenant: false }); // If error, reset tenant and stop fetching

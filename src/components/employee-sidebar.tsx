@@ -72,8 +72,13 @@ export default function EmployeeSidebar() {
       )}
     >
       {/* Logo Section */}
-      <div className="p-4 border-b">
-        <h1 className="text-lg font-bold">Employee Dashboard</h1>
+      <div className="p-4 border-b flex items-center gap-2">
+        <img
+          className="w-6 h-6"
+          src={employee?.tenantId?.logo}
+          alt={`${employee?.tenantId?.name} logo`}
+        />
+        <h1 className="text-lg font-bold">{employee?.tenantId?.name}</h1>
       </div>
 
       {/* Navigation Links */}

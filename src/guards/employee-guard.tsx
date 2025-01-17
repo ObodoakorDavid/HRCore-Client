@@ -16,5 +16,5 @@ export default function EmployeeGuard() {
     return <div className="mt-2">Loading...</div>;
   }
 
-  return employee ? <Outlet /> : <Navigate to="/signin" replace />;
+  return employee ? <Outlet /> : <Navigate to="/login" replace />;
 }
