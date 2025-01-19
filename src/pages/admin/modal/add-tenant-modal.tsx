@@ -35,7 +35,7 @@ const AddTenantModal: FC<AddTenantModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal heading="Add Tenant" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(handleFormSubmit)} className="p-4">
         <h2 className="text-lg font-semibold mb-4">Add New Tenant</h2>
         <div className="mb-4">

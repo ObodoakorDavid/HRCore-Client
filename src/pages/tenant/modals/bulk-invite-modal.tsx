@@ -44,7 +44,7 @@ export default function BulkInviteModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal heading="Bulk Invite" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(onSubmitForm)}>
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">Bulk Invite Upload</h2>

@@ -3,7 +3,7 @@ import { NavigateFunction } from "react-router-dom";
 export interface TenantState {
   tenant: any | null;
   invites: [{ [key: string]: any }];
-  employees: [{ [key: string]: any }];
+  employees: any[];
   isFetchingTenant: boolean;
   isLoading: boolean;
   isSubmitting: boolean;

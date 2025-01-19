@@ -3,13 +3,20 @@ import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 
 interface ModalProps {
+  heading: string;
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   className?: string;
 }
 
-export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
+export const Modal = ({
+  heading,
+  isOpen,
+  onClose,
+  children,
+  className,
+}: ModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -20,7 +27,8 @@ export const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
           className
         )}
       >
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-2xl font-semibold">{heading}</p>
           <X className=" cursor-pointer" onClick={onClose} />
         </div>
         <div>{children}</div>

@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import AddTenantModal from "./modal/add-tenant-modal";
 import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
+import { ClipboardCopy } from "lucide-react";
 
 // Define the Tenant type interface
 interface Tenant {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   color: string;
@@ -33,6 +34,11 @@ export default function Tenants() {
     });
   };
 
+  const handleCopyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard!");
+  };
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-8">
@@ -44,6 +50,7 @@ export default function Tenants() {
         <thead className="bg-gray-100">
           <tr>
             <th className="text-left p-2 border">Name</th>
+            <th className="text-left p-2 border">Tenant ID</th>
             <th className="text-left p-2 border">Email</th>
             <th className="text-left p-2 border">Color</th>
             <th className="text-left p-2 border">Logo</th>
@@ -51,8 +58,15 @@ export default function Tenants() {
         </thead>
         <tbody>
           {tenants.map((tenant: Tenant) => (
-            <tr key={tenant.id} className="hover:bg-gray-50">
+            <tr key={tenant._id} className="hover:bg-gray-50">
               <td className="text-left p-2 border">{tenant.name}</td>
+              <td className="text-left p-2 border flex items-center gap-2">
+                {tenant._id}
+                <ClipboardCopy
+                  className="w-4 h-4 cursor-pointer text-gray-500 hover:text-black"
+                  onClick={() => handleCopyToClipboard(tenant._id)}
+                />
+              </td>
               <td className="text-left p-2 border">{tenant.email}</td>
               <td
                 className="text-left p-2 border"

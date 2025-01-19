@@ -27,7 +27,7 @@ export default function AddRoleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal heading="Add Role" isOpen={isOpen} onClose={onClose}>
       <h2>Add Role</h2>
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         <div>

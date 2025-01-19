@@ -80,7 +80,6 @@ const actions = (set: EmployeeSetFunction) => ({
       const employee = response?.data?.data?.employee;
 
       console.log(employee);
-      
 
       set((state: EmployeeState) => ({
         ...state,
@@ -97,6 +96,44 @@ const actions = (set: EmployeeSetFunction) => ({
       navigate(`/signin`);
     } finally {
       set({ isFetchingEmployee: false });
+    }
+  },
+  updateEmployeeProfile: async (
+    data: Record<string, any>,
+    onSuccess?: () => void
+  ) => {
+    set({ isSubmitting: true });
+
+    console.log(data);
+
+    try {
+      const response = await axiosInstance.put(`/employee/auth/profile`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const employee = response?.data?.data?.employee;
+
+      console.log(employee);
+
+      set((state: EmployeeState) => ({
+        ...state,
+        employee,
+        isSubmitting: false,
+      }));
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data?.message || "Something went wrong");
+      } else {
+        toast.error("Something went wrong");
+      }
+    } finally {
+      set({ isSubmitting: false });
     }
   },
   logout: (navigate: NavigateFunction, onSuccess?: () => void) => {

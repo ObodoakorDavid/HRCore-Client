@@ -1,4 +1,4 @@
-import { Home, Users, LogOut, ChevronDown } from "lucide-react";
+import { Users, LogOut, ChevronDown, LayoutDashboardIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ const routes: Route[] = [
   {
     name: "Dashboard",
     path: "/dashboard/admin",
-    icon: <Home className="w-5 h-5" />,
+    icon: <LayoutDashboardIcon className="w-5 h-5" />,
   },
   {
     name: "Tenants",
@@ -76,8 +76,9 @@ export default function AdminSidebar() {
                   <Link
                     to={route.path}
                     className={cn(
-                      "flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                      isActive(route.path) && "bg-gray-200 text-gray-900"
+                      "flex items-center justify-between w-full p-2 hover:bg-gray-100 text-gray-700",
+                      isActive(route.path) &&
+                        "bg-gray-200 text-gray-900 border-l-4 border-black"
                     )}
                     onClick={() => toggleMenu(route.name)}
                   >
@@ -101,9 +102,9 @@ export default function AdminSidebar() {
                           <Link
                             to={submenu.path}
                             className={cn(
-                              "flex items-center space-x-3 p-2 pl-8 rounded-md hover:bg-gray-100 text-gray-600",
-                              isActive(submenu.path) &&
-                                "bg-gray-200 text-gray-900"
+                              "flex items-center space-x-3 p-2 ml-8 hover:bg-gray-100 text-gray-600",
+                              isActive(route.path) &&
+                                "bg-gray-200 text-gray-900 border-l-4 border-black"
                             )}
                           >
                             {submenu.icon}
@@ -118,8 +119,9 @@ export default function AdminSidebar() {
                 <Link
                   to={route.path}
                   className={cn(
-                    "flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                    isActive(route.path) && "bg-gray-200 text-gray-900"
+                    "flex items-center space-x-3 p-2 hover:bg-gray-100 text-gray-700",
+                    isActive(route.path) &&
+                      "bg-gray-200 text-gray-900 border-l-4 border-black"
                   )}
                 >
                   {route.icon}

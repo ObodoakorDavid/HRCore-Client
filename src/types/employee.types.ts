@@ -22,11 +22,12 @@ export interface EmployeeState {
       onSuccess?: () => void,
       onError?: (message: string) => void
     ) => Promise<void>;
-    logout: (navigate: NavigateFunction, onSuccess?: () => void) => void;
-    forgotPassword: (
-      email: string,
+    updateEmployeeProfile: (
+      data: Record<string, any>,
       onSuccess?: () => void
     ) => Promise<void>;
+    logout: (navigate: NavigateFunction, onSuccess?: () => void) => void;
+    forgotPassword: (email: string, onSuccess?: () => void) => Promise<void>;
     resetPassword: (
       data: { token: string; password: string },
       onSuccess?: () => void

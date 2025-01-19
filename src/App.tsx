@@ -19,18 +19,21 @@ import AdminGuard from "./guards/admin-guard";
 import AdminLayout from "./layouts/admin-layout";
 import Tenants from "./pages/admin/tenants";
 import EmployeeProfile from "./pages/employee/employee-profile";
-import EmployeeUpdate from "./pages/tenant/employee-update";
 import EmployeeForgotPassword from "./pages/employee/employee-forgot-password";
 import EmployeeLogin from "./pages/employee/employee-login";
 import EmployeeResetPassword from "./pages/employee/employee-reset-password";
 import TenantForgotPassword from "./pages/tenant/tenant-forgot-password";
 import TenantResetPassword from "./pages/tenant/tenant-reset-password";
+import LandingPage from "./pages/public/landing-page";
+import EmployeeProfileUpdate from "./pages/employee/employee-profile-update";
+import Leave from "./pages/tenant/leave";
+import LeaveHistory from "./pages/tenant/leave-history";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <div>Home</div>,
+      element: <LandingPage />,
     },
     //Tenant Routes
     {
@@ -72,6 +75,14 @@ function App() {
               path: "employee/roles",
               element: <EmployeeRoles />,
             },
+            {
+              path: "leave",
+              element: <Leave />,
+            },
+            {
+              path: "leave-history",
+              element: <LeaveHistory />,
+            },
           ],
         },
       ],
@@ -102,7 +113,7 @@ function App() {
             },
             {
               path: "profile/update",
-              element: <EmployeeUpdate />,
+              element: <EmployeeProfileUpdate />,
             },
             // {
             //   path: ":employeeId",

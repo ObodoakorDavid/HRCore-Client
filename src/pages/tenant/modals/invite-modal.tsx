@@ -34,7 +34,11 @@ export default function InviteModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleModalClose}>
+    <Modal
+      heading="Generate Invite Link"
+      isOpen={isOpen}
+      onClose={handleModalClose}
+    >
       <div className="p-6">
         <h2 className="text-lg font-semibold mb-4">Generate Invite Link</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

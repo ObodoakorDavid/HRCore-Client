@@ -7,7 +7,7 @@ export default function EmployeeLayout() {
     <div className="flex h-screen">
       <EmpployeeSidebar />
       <div className="flex-1 bg-gray-100 p-4">
-        <div className=" max-w-5xl">
+        <div className="w-full max-w-[1440px]">
           <Breadcrumb />
           <Outlet />
         </div>

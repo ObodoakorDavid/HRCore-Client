@@ -1,4 +1,10 @@
-import { Home, User, LogOut, ChevronDown } from "lucide-react";
+import {
+  User,
+  LogOut,
+  ChevronDown,
+  Backpack,
+  LayoutDashboardIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
@@ -23,12 +29,12 @@ const routes: Route[] = [
   {
     name: "Dashboard",
     path: "/dashboard/employee",
-    icon: <Home className="w-5 h-5" />,
+    icon: <LayoutDashboardIcon className="w-5 h-5" />,
   },
   {
     name: "Leave",
     path: "/dashboard/employee/leave",
-    icon: <User className="w-5 h-5" />,
+    icon: <Backpack className="w-5 h-5" />,
   },
   {
     name: "Profile",
@@ -92,8 +98,9 @@ export default function EmployeeSidebar() {
                   <Link
                     to={route.path}
                     className={cn(
-                      "flex items-center justify-between w-full p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                      isActive(route.path) && "bg-gray-200 text-gray-900"
+                      "flex items-center justify-between w-full p-2 hover:bg-gray-100 text-gray-700",
+                      isActive(route.path) &&
+                        "bg-gray-200 text-gray-900 border-l-4 border-black"
                     )}
                     onClick={() => toggleMenu(route.name)}
                   >
@@ -117,9 +124,9 @@ export default function EmployeeSidebar() {
                           <Link
                             to={submenu.path}
                             className={cn(
-                              "flex items-center space-x-3 p-2 pl-8 rounded-md hover:bg-gray-100 text-gray-600",
-                              isActive(submenu.path) &&
-                                "bg-gray-200 text-gray-900"
+                              "flex items-center space-x-3 p-2 ml-8 hover:bg-gray-100 text-gray-600",
+                              isActive(route.path) &&
+                                "bg-gray-200 text-gray-900 border-l-4 border-black"
                             )}
                           >
                             {submenu.icon}
@@ -134,8 +141,9 @@ export default function EmployeeSidebar() {
                 <Link
                   to={route.path}
                   className={cn(
-                    "flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                    isActive(route.path) && "bg-gray-200 text-gray-900"
+                    "flex items-center space-x-3 p-2 hover:bg-gray-100 text-gray-700",
+                    isActive(route.path) &&
+                      "bg-gray-200 text-gray-900 border-l-4 border-black"
                   )}
                 >
                   {route.icon}
@@ -170,21 +178,19 @@ export default function EmployeeSidebar() {
       <div className="relative">
         <Separator className="my-2" />
         <div
-          className="py-1 flex items-center justify-center cursor-pointer hover:bg-gray-100"
+          className="p-4 max-w-[200px] flex gap-8 items-center justify-center cursor-pointer hover:bg-gray-100 overflow-x-hidden"
           onClick={toggleProfileDropdown}
         >
           <div>
             <p className="text-sm text-gray-500">{employee.name}</p>
-            <p className="font-semibold text-sm">{employee.email}</p>
-            {/* <p className="text-sm text-gray-500">{employee.position}</p> */}
           </div>
         </div>
 
         {profileDropdownOpen && (
-          <div className="absolute bottom-16 w-full p-4 bg-white border shadow-md rounded-md">
+          <div className="absolute bottom-16 left-40 p-4 bg-white border shadow-md rounded-md">
             <div>
               <p className="font-semibold">{employee.name}</p>
-              <p className="text-sm text-gray-500">{employee.position}</p>
+              <p className="text-sm text-gray-500">{employee.jobRole}</p>
               <p className="text-sm text-gray-500">{employee.email}</p>
             </div>
           </div>

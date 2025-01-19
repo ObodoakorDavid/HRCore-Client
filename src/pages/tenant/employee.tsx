@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import CustomPagination from "@/components/custom-pagination";
 import { useTenantActions, useTenantStore } from "@/store/useTenantStore";
 import { useSearchParams } from "react-router-dom";
-import { Link } from "react-router-dom"; // Import Link component
+// import { Link } from "react-router-dom"; // Import Link component
 
 export default function Employee() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -82,32 +82,38 @@ export default function Employee() {
             <th className="text-left p-2 border">Email</th>
             <th className="text-left p-2 border">Role</th>
             <th className="text-left p-2 border">Joined On</th>
-            <th className="text-left p-2 border">Details</th>
+            {/* <th className="text-left p-2 border">Details</th> */}
           </tr>
         </thead>
         <tbody>
-          {employees?.map((employee) => (
-            <tr key={employee._id} className="hover:bg-gray-50">
-              <td className="p-2 border">
-                <input
-                  type="checkbox"
-                  checked={selectedEmployees.includes(employee._id)}
-                  onChange={() => handleCheckboxChange(employee._id)}
-                />
-              </td>
-              <td className="text-left p-2 border">{employee.name ?? "N/A"}</td>
-              <td className="text-left p-2 border">{employee?.email}</td>
-              <td className="text-left p-2 border">
-                {employee?.role ?? "N/A"}
-              </td>
-              <td className="text-left p-2 border">
-                {new Date(employee.createdAt).toLocaleDateString()}
-              </td>
-              <td className="text-left p-2 border text-blue-500 underline font-semibold">
-                <Link to={`/dashboard/employee/${employee._id}`}>Details</Link>
-              </td>
-            </tr>
-          ))}
+          {employees
+            ? employees?.map((employee) => {
+                return (
+                  <tr key={employee?._id} className="hover:bg-gray-50">
+                    <td className="p-2 border">
+                      <input
+                        type="checkbox"
+                        checked={selectedEmployees.includes(employee._id)}
+                        onChange={() => handleCheckboxChange(employee._id)}
+                      />
+                    </td>
+                    <td className="text-left p-2 border">
+                      {employee.name ?? "N/A"}
+                    </td>
+                    <td className="text-left p-2 border">{employee?.email}</td>
+                    <td className="text-left p-2 border">
+                      {employee?.jobRole ?? "N/A"}
+                    </td>
+                    <td className="text-left p-2 border">
+                      {new Date(employee.createdAt).toLocaleDateString()}
+                    </td>
+                    {/* <td className="text-left p-2 border text-blue-500 underline font-semibold">
+            <Link to={`/dashboard/employee/${employee._id}`}>Details</Link>
+          </td> */}
+                  </tr>
+                );
+              })
+            : null}
         </tbody>
       </table>
 
