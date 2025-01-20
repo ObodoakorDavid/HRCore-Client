@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useTenantStore } from "@/store/useTenantStore";
 
 const routes = [
   {
@@ -60,6 +61,8 @@ export default function TenantSidebar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const location = useLocation();
 
+  const { tenant } = useTenantStore();
+
   const toggleMenu = (menuName: string) => {
     setOpenMenu((prev) => (prev === menuName ? null : menuName));
   };
@@ -80,8 +83,13 @@ export default function TenantSidebar() {
       )}
     >
       {/* Logo Section */}
-      <div className="p-4 border-b">
-        <h1 className="text-lg font-bold">Tenant Portal</h1>
+      <div className="p-4 border-b flex items-center gap-2">
+        <img
+          className="w-8 h-6"
+          src={tenant?.logo}
+          alt={`${tenant?.name} logo`}
+        />
+        <h1 className="text-lg font-bold">{tenant?.name}</h1>
       </div>
 
       {/* Navigation Links */}

@@ -52,6 +52,7 @@ const actions = (set: TenantSetFunction) => ({
 
       set((state: TenantState) => ({
         ...state,
+        tenant,
         isFetchingTenant: false,
       }));
 
@@ -76,7 +77,7 @@ const actions = (set: TenantSetFunction) => ({
     set({ isFetchingTenant: true });
     try {
       const response = await axiosInstance.get(`/tenant/auth`);
-      const tenant = response?.data?.data;
+      const tenant = response?.data?.data?.tenant;
 
       console.log("Tenant Details:", tenant);
 
