@@ -26,7 +26,7 @@ export default function AcceptInvite() {
 
     const onSuccess = () => {
       toast.success("Invite Accepted!");
-      navigate(`/signin`, { replace: true });
+      navigate(`/login`, { replace: true });
     };
 
     const onError = (message: string) => {
