@@ -78,12 +78,12 @@ const actions = (set: EmployeeSetFunction) => ({
     try {
       const response = await axiosInstance.get(`/employee/auth`);
       const employee = response?.data?.data?.employee;
-
-      console.log(employee);
+      const stats = response?.data?.data?.stats;
 
       set((state: EmployeeState) => ({
         ...state,
         employee,
+        stats,
         isFetchingEmployee: false,
       }));
 
@@ -93,19 +93,38 @@ const actions = (set: EmployeeSetFunction) => ({
     } catch (error: unknown) {
       console.log(error);
       set({ employee: null, isFetchingEmployee: false });
-      navigate(`/signin`);
+      navigate(`/login`);
     } finally {
       set({ isFetchingEmployee: false });
     }
   },
+
+  getEmployeeDetails: async (onSuccess?: () => void) => {
+    try {
+      const response = await axiosInstance.get(`/employee/auth`);
+      const employee = response?.data?.data?.employee;
+      const stats = response?.data?.data?.stats;
+
+      set((state: EmployeeState) => ({
+        ...state,
+        employee,
+        stats,
+        isFetchingEmployee: false,
+      }));
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      console.log(error);
+    }
+  },
+
   updateEmployeeProfile: async (
     data: Record<string, any>,
     onSuccess?: () => void
   ) => {
     set({ isSubmitting: true });
-
-    console.log(data);
-
     try {
       const response = await axiosInstance.put(`/employee/auth/profile`, data, {
         headers: {
@@ -113,9 +132,7 @@ const actions = (set: EmployeeSetFunction) => ({
         },
       });
       const employee = response?.data?.data?.employee;
-
-      console.log(employee);
-
+      
       set((state: EmployeeState) => ({
         ...state,
         employee,
@@ -246,6 +263,7 @@ const actions = (set: EmployeeSetFunction) => ({
 // Create Zustand Store with type checking for state
 export const useEmployeeStore = create<EmployeeState>((set) => ({
   employee: {},
+  stats: {},
   isFetchingEmployee: false,
   isSubmitting: false,
   actions: actions(set),

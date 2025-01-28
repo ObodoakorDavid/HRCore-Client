@@ -35,6 +35,7 @@ interface AdminState {
       tenantData: Record<string, any>,
       onSuccess?: () => void
     ) => Promise<void>;
+    setAdmin: (data: Record<string, any>) => Promise<void>;
   };
 }
 
@@ -98,6 +99,12 @@ const actions = (set: SetFunction) => ({
     } finally {
       set({ isFetchingAdmin: false });
     }
+  },
+  setAdmin: async (data: Record<string, any>) => {
+    set((state: AdminState) => ({
+      ...state,
+      admin: data,
+    }));
   },
   logout: (navigate: NavigateFunction, onSuccess?: () => void) => {
     localStorage.removeItem("token");

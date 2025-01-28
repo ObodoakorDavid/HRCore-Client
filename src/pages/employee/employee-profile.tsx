@@ -1,8 +1,9 @@
-import { useEmployeeStore } from "@/store/useEmployeeStore";
+import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Modal } from "@/components/modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLeaveActions, useLeaveStore } from "@/store/useLeaveStore";
 
 // Define types for documents
 interface Document {
@@ -13,7 +14,15 @@ interface Document {
 
 export default function EmployeeProfile() {
   const { employee } = useEmployeeStore();
+  const { getEmployeeDetails } = useEmployeeActions();
+  const { leaveBalance } = useLeaveStore();
+  const { getLeaveBalance } = useLeaveActions();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    getLeaveBalance();
+    getEmployeeDetails();
+  }, [getEmployeeDetails, getLeaveBalance]);
 
   const onClose = () => setIsOpen(false);
 
@@ -24,8 +33,6 @@ export default function EmployeeProfile() {
     link.download = url; // Optional: Set the filename based on the URL
     link.click();
   };
-
-  console.log(employee);
 
   return (
     <div className="mx-auto">
@@ -51,6 +58,38 @@ export default function EmployeeProfile() {
             <span className="font-semibold">Job Role: </span>
             {employee?.jobRole ?? "N/A"}
           </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Level: </span>
+            <span className="capitalize">
+              {employee?.levelId?.name ?? "N/A"}
+            </span>
+          </p>
+          <p className="text-gray-600">
+            <span className="font-semibold">Line Manger: </span>
+            {(employee?.lineManager?.name || employee?.lineManager?.email) ??
+              "N/A"}
+          </p>
+        </div>
+
+        {/* Leave Balance Section */}
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold mb-4">Leave Balances</h2>
+          <ul>
+            {leaveBalance && leaveBalance.length > 0 ? (
+              leaveBalance.map((balance: any, index: number) => (
+                <li key={index} className="mb-4">
+                  <div className="flex justify-between">
+                    <span className="font-semibold capitalize text-gray-600">
+                      {balance.leaveTypeDetails?.name ?? "N/A"}
+                    </span>
+                    <span>{balance.balance ?? 0} days</span>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <p>No leave balances available.</p>
+            )}
+          </ul>
         </div>
 
         {/* Documents Section */}

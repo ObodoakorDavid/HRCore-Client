@@ -1,10 +1,9 @@
-// import { NavigateFunction } from "react-router-dom";
-
 export interface LeaveState {
-  leaves: Record<string, any>[]; // Array of leave records
-  leaveTypes: Record<string, any>[]; // Array of leave records
-  isFetching: boolean; // Indicates whether leaves are being fetched
-  isSubmitting: boolean; // Indicates whether a leave request is being submitted
+  leaves: Record<string, any>[];
+  leaveTypes: Record<string, any>[];
+  leaveBalance: Record<string, any>[];
+  isFetching: boolean;
+  isSubmitting: boolean;
   actions: {
     addLeaveType: (
       data: Record<string, any>,
@@ -16,6 +15,15 @@ export interface LeaveState {
       data: Record<string, any>,
       onSuccess?: () => void
     ) => Promise<void>;
+    //Leave blance
+    getLeaveBalance: () => Promise<void>;
+
+    //Leave Requests
+    applyForLeave: (
+      data: Record<string, any>,
+      onSuccess?: () => void
+    ) => Promise<void>;
+
     // requestLeave: (
     //   data: Record<string, any>,
     //   onSuccess?: () => void
@@ -38,4 +46,12 @@ export interface LeaveSetFunction {
   (
     state: Partial<LeaveState> | ((state: LeaveState) => Partial<LeaveState>)
   ): void;
+}
+
+export interface ApplyLeaveFormData {
+  leaveTypeId: string;
+  startDate: Date | string;
+  resumptionDate: Date | string;
+  duration: number;
+  description: string;
 }

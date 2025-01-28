@@ -28,6 +28,14 @@ import LandingPage from "./pages/public/landing-page";
 import EmployeeProfileUpdate from "./pages/employee/employee-profile-update";
 import Leave from "./pages/tenant/leave";
 import LeaveHistory from "./pages/tenant/leave-history";
+import Levels from "./pages/tenant/level";
+import LeaveTypes from "./pages/tenant/leave-types";
+import EmployeeLeave from "./pages/employee/employee-leave";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Import React Query
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import EmployeeLeaveRequests from "./pages/employee/employee-leave-requests";
+
+const queryClient = new QueryClient();
 
 function App() {
   const router = createBrowserRouter([
@@ -80,8 +88,16 @@ function App() {
               element: <Leave />,
             },
             {
-              path: "leave-history",
+              path: "leave/types",
+              element: <LeaveTypes />,
+            },
+            {
+              path: "leave/history",
               element: <LeaveHistory />,
+            },
+            {
+              path: "level",
+              element: <Levels />,
             },
           ],
         },
@@ -105,7 +121,11 @@ function App() {
             },
             {
               path: "leave",
-              element: <div>Leave management</div>,
+              element: <EmployeeLeave />,
+            },
+            {
+              path: "leave/leave-request",
+              element: <EmployeeLeaveRequests />,
             },
             {
               path: "profile",
@@ -170,10 +190,11 @@ function App() {
   ]);
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <Toaster position="top-right" />
       <RouterProvider router={router} />
-    </>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

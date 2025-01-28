@@ -10,6 +10,8 @@ import {
   LayoutDashboardIcon,
   Backpack,
   FileStack,
+  UserPen,
+  FilePenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -49,11 +51,21 @@ const routes = [
     icon: <Backpack className="w-5 h-5" />,
     submenu: [
       {
+        name: "Leave Types",
+        path: "/dashboard/tenant/leave/types",
+        icon: <FilePenLine className="w-4 h-4" />,
+      },
+      {
         name: "Leave History",
-        path: "/dashboard/tenant/leave-history",
+        path: "/dashboard/tenant/leave/history",
         icon: <FileStack className="w-4 h-4" />,
       },
     ],
+  },
+  {
+    name: "Level",
+    path: "/dashboard/tenant/level",
+    icon: <UserPen className="w-4 h-4" />,
   },
 ];
 
@@ -101,7 +113,7 @@ export default function TenantSidebar() {
                 <div>
                   {/* Parent menu with toggle */}
                   <Link
-                    to={route.name}
+                    to={route.path}
                     className={cn(
                       "flex items-center justify-between w-full p-2 hover:bg-gray-100 text-gray-700",
                       isActive(route.path) &&

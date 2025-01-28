@@ -13,6 +13,7 @@ export interface TenantState {
     currentPage: number;
     perPage: number;
   };
+  stats: any;
   actions: {
     validateTenant: (tenantId: string, onSuccess?: () => void) => Promise<void>;
     tenantLogin: (

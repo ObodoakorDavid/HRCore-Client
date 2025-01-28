@@ -19,7 +19,7 @@ const actions = (set: TenantSetFunction) => ({
         isFetchingTenant: false,
       }));
 
-      toast.success(`Tenant ID validated successfully!`);
+      toast.success(`Client ID validated successfully!`);
 
       if (onSuccess) {
         onSuccess();
@@ -27,11 +27,11 @@ const actions = (set: TenantSetFunction) => ({
       return tenant;
     } catch (error: unknown) {
       console.log(error);
-      set({ isFetchingTenant: false }); // If error, reset tenant and stop fetching
+      set({ isFetchingTenant: false });
       if (isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to validate id");
+        toast.error(error.response?.data?.message || "Failed to client id");
       } else {
-        toast.error("Failed to validate Id");
+        toast.error("Failed to client Id");
       }
     } finally {
       set({ isFetchingTenant: false }); // Reset loading state regardless of success/failure
@@ -177,11 +177,13 @@ const actions = (set: TenantSetFunction) => ({
     try {
       const response = await axiosInstance.get(`/employee`, { params });
       const employees = response?.data?.data?.employees;
+      const stats = response?.data?.data?.stats;
       console.log({ data: response?.data?.data });
 
       set((state: TenantState) => ({
         ...state,
         employees,
+        stats,
         isLoading: false,
       }));
 
@@ -312,6 +314,7 @@ export const useTenantStore = create<TenantState>((set) => ({
     currentPage: 0,
     perPage: 0,
   },
+  stats: {},
   actions: actions(set),
 }));
 

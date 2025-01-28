@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
+import { SearchableDropdown } from "@/components/searchable-dropdown";
+import axiosInstance from "@/lib/axios.config";
 
 interface EditLeaveTypeModalProps {
   isOpen: boolean;
@@ -9,9 +11,25 @@ interface EditLeaveTypeModalProps {
     _id: string;
     name: string;
     defaultBalance: number;
+    levelId: string;
   }) => Promise<void>;
-  leaveType: { _id: string; name: string; defaultBalance: number };
+  leaveType: {
+    _id: string;
+    name: string;
+    defaultBalance: number;
+    levelId: {
+      _id: string;
+      name: string;
+    };
+  };
   isSubmitting: boolean;
+}
+
+interface FormValues {
+  _id: string;
+  name: string;
+  defaultBalance: number;
+  levelId: string;
 }
 
 export default function EditLeaveTypeModal({
@@ -24,25 +42,42 @@ export default function EditLeaveTypeModal({
   const {
     register,
     handleSubmit,
+    setValue,
+    clearErrors,
     formState: { errors },
-  } = useForm<{ _id: string; name: string; defaultBalance: number }>({
+  } = useForm<FormValues>({
     defaultValues: {
       _id: leaveType._id,
       name: leaveType.name,
       defaultBalance: leaveType.defaultBalance,
+      levelId: leaveType.levelId._id,
     },
   });
 
-  const handleFormSubmit = async (data: {
-    _id: string;
-    name: string;
-    defaultBalance: number;
-  }) => {
+  const handleFormSubmit = async (data: FormValues) => {
     await onSubmit({
       _id: data._id,
       name: data.name,
       defaultBalance: data.defaultBalance,
+      levelId: data.levelId,
     });
+  };
+
+  const handleFetchOptions = async (search: string) => {
+    try {
+      const response = await axiosInstance.get(
+        `/level?search=${encodeURIComponent(search)}&limit=5`
+      );
+
+      const levels = response?.data?.data?.levels;
+
+      return levels?.map((item: { _id: string; name: string }) => ({
+        value: item._id,
+        label: item.name,
+      }));
+    } catch {
+      return [];
+    }
   };
 
   return (
@@ -72,6 +107,33 @@ export default function EditLeaveTypeModal({
           {errors.defaultBalance && (
             <p className="text-red-500 text-sm mt-1">
               {errors.defaultBalance.message}
+            </p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Level</label>
+          <SearchableDropdown
+            searchInputPlaceholder="Search for a level"
+            placeholder={leaveType?.levelId?.name || "Select a Level"}
+            fetchOptions={handleFetchOptions}
+            onChange={(value) => {
+              console.log("Selected Level ID:", value);
+              setValue("levelId", value);
+              clearErrors(["levelId"]);
+            }}
+          />
+          <input
+            type="text"
+            {...register("levelId", {
+              required: "Level is required",
+            })}
+            className="hidden"
+          />
+
+          {errors.levelId && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.levelId?.message}
             </p>
           )}
         </div>

@@ -32,6 +32,7 @@ const actions = (set: LeaveSetFunction) => ({
       } else {
         toast.error("Failed to add leave type");
       }
+      throw error;
     }
   },
 
@@ -88,108 +89,81 @@ const actions = (set: LeaveSetFunction) => ({
     }
   },
 
-  //   approveLeave: async (
-  //     leaveId: string,
-  //     onSuccess?: () => void,
-  //     onError?: (message: string) => void
-  //   ) => {
-  //     set({ isSubmitting: true });
-  //     try {
-  //       const response = await axiosInstance.put(`/leave/approve/${leaveId}`);
-  //       const updatedLeave = response?.data?.data;
+  // Leave Requests
 
-  //       console.log("Approved Leave:", updatedLeave);
+  applyForLeave: async (data: Record<string, any>, onSuccess?: () => void) => {
+    const { startDate, endDate } = data;
 
-  //       set((state: LeaveState) => ({
-  //         ...state,
-  //         isSubmitting: false,
-  //       }));
+    // Convert startDate and endDate to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-  //       toast.success("Leave approved successfully.");
-  //       if (onSuccess) {
-  //         onSuccess();
-  //       }
-  //     } catch (error: unknown) {
-  //       console.log(error);
-  //       set({ isSubmitting: false });
-  //       if (isAxiosError(error)) {
-  //         toast.error(error.response?.data?.message || "Failed to approve leave");
-  //         if (onError) {
-  //           onError(error.response?.data?.message);
-  //         }
-  //       } else {
-  //         toast.error("Failed to approve leave");
-  //       }
-  //     }
-  //   },
+    // Calculate the difference in milliseconds between the two dates
+    const timeDifference = end.getTime() - start.getTime();
 
-  //   rejectLeave: async (
-  //     leaveId: string,
-  //     onSuccess?: () => void,
-  //     onError?: (message: string) => void
-  //   ) => {
-  //     set({ isSubmitting: true });
-  //     try {
-  //       const response = await axiosInstance.put(`/leave/reject/${leaveId}`);
-  //       const updatedLeave = response?.data?.data;
+    // Convert milliseconds to days (1000 ms * 60 seconds * 60 minutes * 24 hours)
+    const daysTaken = timeDifference / (1000 * 3600 * 24) + 1; // Adding 1 to include both start and end dates
 
-  //       console.log("Rejected Leave:", updatedLeave);
+    // Add daysTaken to the request body
+    const updatedData = {
+      ...data,
+      daysTaken,
+      startDate: start.toISOString().split("T")[0],
+      endDate: end.toISOString().split("T")[0],
+    };
 
-  //       set((state: LeaveState) => ({
-  //         ...state,
-  //         isSubmitting: false,
-  //       }));
+    console.log(updatedData);
 
-  //       toast.success("Leave rejected successfully.");
-  //       if (onSuccess) {
-  //         onSuccess();
-  //       }
-  //     } catch (error: unknown) {
-  //       console.log(error);
-  //       set({ isSubmitting: false });
-  //       if (isAxiosError(error)) {
-  //         toast.error(error.response?.data?.message || "Failed to reject leave");
-  //         if (onError) {
-  //           onError(error.response?.data?.message);
-  //         }
-  //       } else {
-  //         toast.error("Failed to reject leave");
-  //       }
-  //     }
-  //   },
+    set({ isFetching: true });
+    try {
+      const response = await axiosInstance.post(`/leave/leave-request`, data);
+      const leaveBalance = response?.data?.data?.leaveBalance;
+      console.log("Leave Request Made", leaveBalance);
+      toast.success("Request Made");
 
-  //   cancelLeave: async (leaveId: string, onSuccess?: () => void) => {
-  //     set({ isSubmitting: true });
-  //     try {
-  //       await axiosInstance.delete(`/leave/cancel/${leaveId}`);
+      set((state: LeaveState) => ({
+        ...state,
+        leaveBalance,
+        isFetching: false,
+      }));
 
-  //       console.log("Leave Canceled:", leaveId);
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      console.log(error);
+      set({ isFetching: false });
+      toast.error("Failed to request for leave");
+    }
+  },
 
-  //       set((state: LeaveState) => ({
-  //         ...state,
-  //         isSubmitting: false,
-  //       }));
+  // Leave Balance
+  getLeaveBalance: async () => {
+    set({ isFetching: true });
+    try {
+      const response = await axiosInstance.get(`/leave/balance`);
+      const leaveBalance = response?.data?.data?.leaveBalance;
+      console.log("Leave Balance Retrieved", leaveBalance);
 
-  //       toast.success("Leave canceled successfully.");
-  //       if (onSuccess) {
-  //         onSuccess();
-  //       }
-  //     } catch (error: unknown) {
-  //       console.log(error);
-  //       set({ isSubmitting: false });
-  //       if (isAxiosError(error)) {
-  //         toast.error(error.response?.data?.message || "Failed to cancel leave");
-  //       } else {
-  //         toast.error("Failed to cancel leave");
-  //       }
-  //     }
-  //   },
+      set((state: LeaveState) => ({
+        ...state,
+        leaveBalance,
+        isFetching: false,
+      }));
+    } catch (error: unknown) {
+      console.log(error);
+      set({ isFetching: false });
+      toast.error("Failed to fetch leave balance");
+      throw error;
+    }
+  },
 });
 
 // Create Zustand Store with type checking for state
 export const useLeaveStore = create<LeaveState>((set) => ({
   leaves: [],
   leaveTypes: [],
+  leaveBalance: [],
   isFetching: false,
   isSubmitting: false,
   actions: actions(set),

@@ -4,6 +4,7 @@ import {
   ChevronDown,
   Backpack,
   LayoutDashboardIcon,
+  FilePenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,6 +36,13 @@ const routes: Route[] = [
     name: "Leave",
     path: "/dashboard/employee/leave",
     icon: <Backpack className="w-5 h-5" />,
+    submenu: [
+      {
+        name: "Leave Request",
+        path: "/dashboard/employee/leave/leave-request",
+        icon: <FilePenLine className="w-4 h-4" />,
+      },
+    ],
   },
   {
     name: "Profile",
@@ -64,8 +72,9 @@ export default function EmployeeSidebar() {
     setOpenMenu((prev) => (prev === menuName ? null : menuName));
   };
 
-  const isActive = (path: string) =>
-    location.pathname.toLowerCase() === path.toLowerCase();
+  const isActive = (path: string) => {
+    return location.pathname.toLowerCase() === path.toLowerCase();
+  };
 
   const toggleProfileDropdown = () => {
     setProfileDropdownOpen((prev) => !prev);
@@ -125,7 +134,7 @@ export default function EmployeeSidebar() {
                             to={submenu.path}
                             className={cn(
                               "flex items-center space-x-3 p-2 ml-8 hover:bg-gray-100 text-gray-600",
-                              isActive(route.path) &&
+                              isActive(submenu.path) &&
                                 "bg-gray-200 text-gray-900 border-l-4 border-black"
                             )}
                           >

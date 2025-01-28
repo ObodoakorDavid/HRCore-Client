@@ -4,6 +4,7 @@ export interface EmployeeState {
   employee: any;
   isFetchingEmployee: boolean;
   isSubmitting: boolean;
+  stats: any;
   actions: {
     employeeSignup: (
       data: Record<string, any>,
@@ -17,6 +18,7 @@ export interface EmployeeState {
       navigate: NavigateFunction,
       onSuccess?: () => void
     ) => Promise<void>;
+    getEmployeeDetails: (onSuccess?: () => void) => Promise<void>;
     acceptInvite: (
       data: { [key: string]: any },
       onSuccess?: () => void,
