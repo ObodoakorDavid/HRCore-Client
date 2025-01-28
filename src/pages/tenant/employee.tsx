@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Employee() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { employees, pagination, stats } = useTenantStore();
+  const { employees, pagination } = useTenantStore();
   const { getAllEmployees } = useTenantActions();
   const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
