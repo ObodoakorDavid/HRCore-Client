@@ -1,26 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getStatusClasses } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import LeaveRequestActionModal from "./modals/leave-request-action-modal";
 import LeaveRequestDetailModal from "./modals/leave-request-detail-modal";
 import { fetchManagerLeaveRequest, updateLeaveRequest } from "@/api/leave.api";
-
-interface Leave {
-  _id: string;
-  employeeName: string;
-  status: string;
-  startDate: string;
-  resumptionDate: string;
-  description: string;
-  employee: {
-    name: string;
-  };
-  lineManager: {
-    name: string;
-  };
-}
+import { Leave } from "@/types/leave.types";
 
 export default function EmployeeLeaveRequests() {
   const [selectedLeave, setSelectedLeave] = useState<Leave | null>(null);
@@ -84,42 +70,50 @@ export default function EmployeeLeaveRequests() {
           </thead>
           <tbody>
             {data?.leaveRequests?.length > 0 ? (
-              data.leaveRequests.map((leave: Leave) => (
-                <tr key={leave._id} className="hover:bg-gray-50">
-                  <td className="p-2 border">{leave.employee?.name}</td>
-                  <td className="p-2 border">{leave.lineManager?.name}</td>
-                  <td className="p-2 border">{formatDate(leave.startDate)}</td>
-                  <td className="p-2 border">
-                    {formatDate(leave.resumptionDate)}
-                  </td>
-                  <td className="p-2 border capitalize">{leave.status}</td>
-                  <td className="p-2 border flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        setSelectedLeave(leave);
-                        setIsDetailModalOpen(true);
-                      }}
-                    >
-                      View Details
-                    </Button>
-                    {leave.status === "pending" && (
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setSelectedLeave(leave);
-                            setIsActionModalOpen(true);
-                          }}
-                        >
-                          Update
-                        </Button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))
+              data.leaveRequests.map((leave: Leave) => {
+                const statusClass = getStatusClasses(leave.status);
+
+                return (
+                  <tr key={leave._id} className="hover:bg-gray-50">
+                    <td className="p-2 border">{leave.employee?.name}</td>
+                    <td className="p-2 border">{leave.lineManager?.name}</td>
+                    <td className="p-2 border">
+                      {formatDate(leave.startDate)}
+                    </td>
+                    <td className="p-2 border">
+                      {formatDate(leave.resumptionDate)}
+                    </td>
+                    <td className={`p-2 border capitalize ${statusClass}`}>
+                      {leave.status}
+                    </td>
+                    <td className="p-2 border flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedLeave(leave);
+                          setIsDetailModalOpen(true);
+                        }}
+                      >
+                        View Details
+                      </Button>
+                      {leave.status === "pending" && (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedLeave(leave);
+                              setIsActionModalOpen(true);
+                            }}
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={6} className="p-4 text-center">

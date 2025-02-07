@@ -14,6 +14,13 @@ interface Tenant {
   logo: string;
 }
 
+interface CreateTenant {
+  name: string;
+  email: string;
+  color: string;
+  logo: FileList;
+}
+
 export default function Tenants() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { tenants, isSubmitting } = useAdminStore();
@@ -26,8 +33,10 @@ export default function Tenants() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleAddTenant = async (data: Omit<Tenant, "id">) => {
-    await addTenant(data, () => {
+  const handleAddTenant = async (data: CreateTenant) => {
+    console.log({ ...data, logo: data.logo[0] });
+
+    await addTenant({ ...data, logo: data.logo[0] }, () => {
       closeModal();
       toast.success("Tenant added successfully!");
       getTenants({ page: 1, limit: 10 });

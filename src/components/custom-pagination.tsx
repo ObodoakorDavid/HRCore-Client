@@ -11,10 +11,10 @@ import { useSearchParams } from "react-router-dom";
 
 interface PaginationProps {
   pagination: {
-    totalCount: number;
+    total: number;
     totalPages: number;
-    perPage: number;
-    currentPage: number;
+    limit: number;
+    page: number;
   };
 }
 

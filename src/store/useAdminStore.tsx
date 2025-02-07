@@ -158,7 +158,11 @@ const actions = (set: SetFunction) => ({
   ) => {
     set({ isSubmitting: true });
     try {
-      await axiosInstance.post(`/admin/tenant`, tenantData);
+      await axiosInstance.post(`/admin/tenant`, tenantData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       set((state: AdminState) => ({
         ...state,

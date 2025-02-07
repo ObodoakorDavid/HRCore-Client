@@ -8,7 +8,6 @@ import {
   ChevronDown,
   Mail,
   LayoutDashboardIcon,
-  Backpack,
   FileStack,
   UserPen,
   FilePenLine,
@@ -24,11 +23,6 @@ const routes = [
     icon: <LayoutDashboardIcon className="w-5 h-5" />,
   },
   {
-    name: "Profile",
-    path: "/dashboard/tenant/profile",
-    icon: <User className="w-5 h-5" />,
-  },
-  {
     name: "Employee",
     path: "/dashboard/tenant/employee",
     icon: <Settings className="w-5 h-5" />,
@@ -38,34 +32,34 @@ const routes = [
         path: "/dashboard/tenant/employee/invite",
         icon: <Mail className="w-4 h-4" />,
       },
-      // {
-      //   name: "Roles",
-      //   path: "/dashboard/tenant/employee/roles",
-      //   icon: <ShieldCheck className="w-4 h-4" />,
-      // },
     ],
   },
   {
     name: "Leave",
     path: "/dashboard/tenant/leave",
-    icon: <Backpack className="w-5 h-5" />,
+    icon: <FileStack className="w-5 h-5" />,
     submenu: [
       {
         name: "Leave Types",
         path: "/dashboard/tenant/leave/types",
         icon: <FilePenLine className="w-4 h-4" />,
       },
-      {
-        name: "Leave History",
-        path: "/dashboard/tenant/leave/history",
-        icon: <FileStack className="w-4 h-4" />,
-      },
+      // {
+      //   name: "Leave History",
+      //   path: "/dashboard/tenant/leave/history",
+      //   icon: <FileStack className="w-4 h-4" />,
+      // },
     ],
   },
   {
     name: "Level",
     path: "/dashboard/tenant/level",
     icon: <UserPen className="w-4 h-4" />,
+  },
+  {
+    name: "Profile",
+    path: "/dashboard/tenant/profile",
+    icon: <User className="w-5 h-5" />,
   },
 ];
 

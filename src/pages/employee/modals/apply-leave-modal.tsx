@@ -8,16 +8,16 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
-import axiosInstance from "@/lib/axios.config";
 import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { handleFetchBalances } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@radix-ui/react-popover";
-import { CalendarIcon } from "lucide-react";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/popover";
 
 interface ApplyLeaveModalProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ interface ApplyLeaveFormData {
   startDate: Date | string;
   resumptionDate: Date | string;
   duration: number;
-  description: string;
+  reason: string;
 }
 
 export default function ApplyLeaveModal({
@@ -48,7 +48,11 @@ export default function ApplyLeaveModal({
     watch,
     formState: { errors },
     reset,
-  } = useForm<ApplyLeaveFormData>();
+  } = useForm<ApplyLeaveFormData>({
+    defaultValues: {
+      startDate: new Date(),
+    },
+  });
 
   const duration = watch("duration");
 
@@ -76,49 +80,19 @@ export default function ApplyLeaveModal({
     const { startDate, resumptionDate } = data;
     const start = new Date(startDate);
     const end = new Date(resumptionDate);
-    const timeDifference = end.getTime() - start.getTime();
-    const daysTaken = timeDifference / (1000 * 3600 * 24) + 1; // Adding 1 to include both start and end dates
 
-    // Add daysTaken to the request body
     const updatedData = {
       ...data,
-      daysTaken,
       startDate: start.toISOString().split("T")[0].toString(),
-      endDate: end.toISOString().split("T")[0].toString(),
+      resumptionDate: end.toISOString().split("T")[0].toString(),
     };
-
-    try {
-      await onSubmit(updatedData);
-      reset();
-    } catch {}
-  };
-
-  const handleFetchOptions = async (search: string) => {
-    try {
-      const response = await axiosInstance.get(
-        `/leave/balance?search=${encodeURIComponent(search)}&limit=5`
-      );
-
-      const leaveBalance = response?.data?.data?.leaveBalance;
-
-      return leaveBalance?.map(
-        (item: {
-          leaveTypeId: string;
-          balance: string;
-          leaveTypeDetails: { name: string };
-        }) => ({
-          value: item.leaveTypeId,
-          label: `${item.leaveTypeDetails.name} - ${item.balance} days left`,
-        })
-      );
-    } catch {
-      return [];
-    }
+    await onSubmit(updatedData);
+    reset();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent aria-describedby="leave-application-description">
         <DialogHeader>
           <DialogTitle>Apply for Leave</DialogTitle>
         </DialogHeader>
@@ -127,14 +101,14 @@ export default function ApplyLeaveModal({
             <label className="block text-sm font-medium mb-1">Leave Type</label>
             <SearchableDropdown
               placeholder="Search and select a leave type"
-              fetchOptions={handleFetchOptions}
+              fetchOptions={handleFetchBalances}
               onChange={(value) => {
                 console.log("Selected Level ID:", value);
                 setValue("leaveTypeId", value);
                 clearErrors(["leaveTypeId"]);
               }}
             />
-            <input
+            <Input
               type="text"
               {...register("leaveTypeId", {
                 required: "Select a leave type",
@@ -162,7 +136,10 @@ export default function ApplyLeaveModal({
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent
+                className="w-auto p-0 flex justify-end"
+                align="center"
+              >
                 <Calendar
                   mode="single"
                   selected={new Date(startDate)}
@@ -185,7 +162,7 @@ export default function ApplyLeaveModal({
               </PopoverContent>
             </Popover>
 
-            <input
+            <Input
               type="text"
               {...register("startDate", {
                 required: "Start Date is required",
@@ -242,12 +219,12 @@ export default function ApplyLeaveModal({
                   selected={new Date(resumptionDate)}
                   disabled={(date) => date < new Date()}
                   initialFocus
-                  className="rounded-md border bg-white z-50"
+                  className="rounded-md border bg-white"
                 />
               </PopoverContent>
             </Popover>
 
-            <input
+            <Input
               type="text"
               {...register("resumptionDate", {
                 required: "Resumption date is required",
@@ -262,15 +239,15 @@ export default function ApplyLeaveModal({
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Note</label>
+            <label className="block text-sm font-medium mb-1">Reason</label>
             <Textarea
               placeholder="Enter the reason for leave"
-              {...register("description", { required: "Note is required" })}
+              {...register("reason", { required: "Reason is required" })}
               disabled={isSubmitting}
             />
-            {errors.description && (
+            {errors.reason && (
               <p className="text-sm text-red-500 mt-1">
-                {errors.description.message}
+                {errors.reason.message}
               </p>
             )}
           </div>

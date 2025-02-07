@@ -11,7 +11,7 @@ import EmployeeInvites from "./pages/tenant/employee-invites";
 import EmployeeRegister from "./pages/employee/employee-register";
 import EmployeeLayout from "./layouts/employee-layout";
 import EmployeeDashboard from "./pages/employee/employee-dashboard";
-import EmployeeGuard from "./guards/employee-guard";
+import EmployeeGuard, { IsEmployeeAdmin } from "./guards/employee-guard";
 import AcceptInvite from "./pages/employee/accept-invite";
 import EmployeeRoles from "./pages/tenant/employee-roles";
 import AdminLogin from "./pages/admin/admin-login";
@@ -26,14 +26,17 @@ import TenantForgotPassword from "./pages/tenant/tenant-forgot-password";
 import TenantResetPassword from "./pages/tenant/tenant-reset-password";
 import LandingPage from "./pages/public/landing-page";
 import EmployeeProfileUpdate from "./pages/employee/employee-profile-update";
-import Leave from "./pages/tenant/leave";
-import LeaveHistory from "./pages/tenant/leave-history";
+import TenantLeave from "./pages/tenant/tenant-leave";
+// import LeaveHistory from "./pages/tenant/leave-history";
 import Levels from "./pages/tenant/level";
 import LeaveTypes from "./pages/tenant/leave-types";
 import EmployeeLeave from "./pages/employee/employee-leave";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Import React Query
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import EmployeeLeaveRequests from "./pages/employee/employee-leave-requests";
+import AllLeaves from "./pages/employee/employee-admin/all-leaves";
+import EmployeeDetail from "./pages/employee/employee-detail";
+import EmployeeLeaveDetail from "./pages/employee/employee-leave-detail";
 
 const queryClient = new QueryClient();
 
@@ -84,16 +87,16 @@ function App() {
               element: <EmployeeRoles />,
             },
             {
+              path: "employee/:employeeId",
+              element: <EmployeeDetail />,
+            },
+            {
               path: "leave",
-              element: <Leave />,
+              element: <TenantLeave />,
             },
             {
               path: "leave/types",
               element: <LeaveTypes />,
-            },
-            {
-              path: "leave/history",
-              element: <LeaveHistory />,
             },
             {
               path: "level",
@@ -128,6 +131,10 @@ function App() {
               element: <EmployeeLeaveRequests />,
             },
             {
+              path: "leave/:leaveId",
+              element: <EmployeeLeaveDetail />,
+            },
+            {
               path: "profile",
               element: <EmployeeProfile />,
             },
@@ -135,10 +142,16 @@ function App() {
               path: "profile/update",
               element: <EmployeeProfileUpdate />,
             },
-            // {
-            //   path: ":employeeId",
-            //   element: <EmployeeDetail />,
-            // },
+
+            {
+              element: <IsEmployeeAdmin />,
+              children: [
+                {
+                  path: "leave/all-leaves",
+                  element: <AllLeaves />,
+                },
+              ],
+            },
           ],
         },
       ],

@@ -8,10 +8,10 @@ export interface TenantState {
   isLoading: boolean;
   isSubmitting: boolean;
   pagination: {
-    totalCount: number;
+    total: number;
     totalPages: number;
-    currentPage: number;
-    perPage: number;
+    limit: number;
+    page: number;
   };
   stats: any;
   actions: {

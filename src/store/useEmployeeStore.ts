@@ -98,7 +98,6 @@ const actions = (set: EmployeeSetFunction) => ({
       set({ isFetchingEmployee: false });
     }
   },
-
   getEmployeeDetails: async (onSuccess?: () => void) => {
     try {
       const response = await axiosInstance.get(`/employee/auth`);
@@ -119,20 +118,19 @@ const actions = (set: EmployeeSetFunction) => ({
       console.log(error);
     }
   },
-
   updateEmployeeProfile: async (
     data: Record<string, any>,
     onSuccess?: () => void
   ) => {
     set({ isSubmitting: true });
     try {
-      const response = await axiosInstance.put(`/employee/auth/profile`, data, {
+      const response = await axiosInstance.put(`/employee/auth`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       const employee = response?.data?.data?.employee;
-      
+
       set((state: EmployeeState) => ({
         ...state,
         employee,
@@ -262,7 +260,7 @@ const actions = (set: EmployeeSetFunction) => ({
 
 // Create Zustand Store with type checking for state
 export const useEmployeeStore = create<EmployeeState>((set) => ({
-  employee: {},
+  employee: null,
   stats: {},
   isFetchingEmployee: false,
   isSubmitting: false,

@@ -1,7 +1,41 @@
 import { NavigateFunction } from "react-router-dom";
 
+export interface Employee {
+  _id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  jobRole: string;
+  isOnLeave: boolean;
+  isAdmin: boolean;
+  lineManager: Employee;
+  reliever: Employee;
+  levelId: {
+    _id: string;
+    name: string;
+  };
+  documents: [
+    {
+      _id: string;
+      url: string;
+      fileType: string;
+    }
+  ];
+}
+
+export interface UpdateEmployee {
+  name: string;
+  email: string;
+  lineManager: string;
+  isOnLeave: boolean;
+  reliever: string;
+  file: File | null;
+  avatar: File | null;
+}
+
 export interface EmployeeState {
-  employee: any;
+  // employee: any;
+  employee: Employee | null;
   isFetchingEmployee: boolean;
   isSubmitting: boolean;
   stats: any;

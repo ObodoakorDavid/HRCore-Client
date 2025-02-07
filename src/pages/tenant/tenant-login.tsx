@@ -62,7 +62,7 @@ export default function TenantLogin() {
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-6 text-center">Tenant Login</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center">Client Login</h2>
 
       {/* Tenant ID Input */}
       <form
@@ -71,7 +71,7 @@ export default function TenantLogin() {
       >
         <div>
           <Label htmlFor="tenantId" className="block mb-1 font-medium">
-            Tenant ID
+            Client ID
           </Label>
           <Input
             id="tenantId"
@@ -79,7 +79,7 @@ export default function TenantLogin() {
             {...registerTenant("tenantId", {
               required: "Tenant ID is required",
             })}
-            placeholder="Enter your Tenant ID"
+            placeholder="Enter your client ID"
             className="w-full"
           />
           {tenantErrors.tenantId && (
@@ -93,7 +93,7 @@ export default function TenantLogin() {
           disabled={isTenantSubmitting || isTenantValid}
           className="w-full"
         >
-          {isTenantSubmitting ? "Validating..." : "Validate Tenant ID"}
+          {isTenantSubmitting ? "Validating..." : "Validate Client ID"}
         </Button>
       </form>
 

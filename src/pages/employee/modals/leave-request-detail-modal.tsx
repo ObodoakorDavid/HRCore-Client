@@ -4,24 +4,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formatDate } from "@/lib/utils";
+import { formatDate, getStatusClasses } from "@/lib/utils";
+import { Leave } from "@/types/leave.types";
 
 interface LeaveRequestDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  leaveRequest: {
-    employee?: {
-      name: string;
-    };
-    lineManager?: {
-      name: string;
-    };
-    startDate: string;
-    resumptionDate: string;
-    status: string;
-    description: string;
-    reason?: string;
-  } | null;
+  leaveRequest: Leave | null | undefined;
 }
 
 const LeaveRequestDetailModal = ({
@@ -38,14 +27,14 @@ const LeaveRequestDetailModal = ({
     startDate,
     status,
     reason,
-    description,
+    rejectionReason,
   } = leaveRequest;
 
   console.log(leaveRequest);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" aria-describedby="leave-details">
         <DialogHeader>
           <DialogTitle>Leave Request Details</DialogTitle>
         </DialogHeader>
@@ -66,21 +55,21 @@ const LeaveRequestDetailModal = ({
               {formatDate(resumptionDate)}
             </div>
 
-            <div className="text-sm text-gray-500">Description</div>
-            <div className="text-sm font-medium">{description}</div>
-
             <div className="text-sm text-gray-500">Status</div>
             <div
-              className={`text-sm font-medium capitalize ${
-                status == "approved"
-                  ? "text-green-300"
-                  : status == "rejected"
-                  ? "text-red-500"
-                  : ""
-              }`}
+              className={`text-sm font-medium capitalize w-fit px-2 rounded-lg ${getStatusClasses(
+                status
+              )}`}
             >
-              {leaveRequest.status}
+              {status}
             </div>
+
+            {rejectionReason && (
+              <>
+                <div className="text-sm text-gray-500">Rejection Reason</div>
+                <div className="text-sm font-medium">{rejectionReason}</div>
+              </>
+            )}
 
             {reason && (
               <>

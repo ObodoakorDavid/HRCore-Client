@@ -309,10 +309,10 @@ export const useTenantStore = create<TenantState>((set) => ({
   isFetchingTenant: false,
   isSubmitting: false,
   pagination: {
-    totalCount: 0,
+    total: 0,
     totalPages: 0,
-    currentPage: 0,
-    perPage: 0,
+    limit: 0,
+    page: 1,
   },
   stats: {},
   actions: actions(set),

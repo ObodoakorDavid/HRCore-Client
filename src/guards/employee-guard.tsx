@@ -18,3 +18,13 @@ export default function EmployeeGuard() {
 
   return employee ? <Outlet /> : <Navigate to="/login" replace />;
 }
+
+export function IsEmployeeAdmin() {
+  const { employee } = useEmployeeStore();
+
+  if (!employee?.isAdmin) {
+    return <div className="mt-2">You don't have rights to this page</div>;
+  }
+
+  return <Outlet />;
+}

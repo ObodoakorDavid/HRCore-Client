@@ -23,22 +23,6 @@ export interface LeaveState {
       data: Record<string, any>,
       onSuccess?: () => void
     ) => Promise<void>;
-
-    // requestLeave: (
-    //   data: Record<string, any>,
-    //   onSuccess?: () => void
-    // ) => Promise<void>;
-    // updateLeaveRequest: (
-    //   data: { id: string; [key: string]: any },
-    //   onSuccess?: () => void
-    // ) => Promise<void>;
-    // cancelLeaveRequest: (id: string, onSuccess?: () => void) => Promise<void>;
-    // approveLeave: (id: string, onSuccess?: () => void) => Promise<void>;
-    // rejectLeave: (
-    //   id: string,
-    //   reason?: string,
-    //   onSuccess?: () => void
-    // ) => Promise<void>;
   };
 }
 
@@ -53,5 +37,25 @@ export interface ApplyLeaveFormData {
   startDate: Date | string;
   resumptionDate: Date | string;
   duration: number;
-  description: string;
+  reason: string;
+}
+
+export interface Leave {
+  _id: string;
+  employee: {
+    name: string;
+  };
+  lineManager: {
+    name: string;
+  };
+  leaveType: {
+    _id: string;
+    name: string;
+  };
+  status: string;
+  duration: string;
+  startDate: string;
+  resumptionDate: string;
+  reason: string;
+  rejectionReason: string;
 }

@@ -1,23 +1,26 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
+import { Input } from "@/components/ui/input";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
-import axiosInstance from "@/lib/axios.config";
 import { handleFetchLevels } from "@/lib/utils";
 
-interface EditLeaveTypeModalProps {
+interface EditEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
     _id: string;
     name: string;
-    defaultBalance: number;
+    email: string;
+    jobRole: string;
     levelId: string;
   }) => Promise<void>;
-  leaveType: {
+  employee: {
     _id: string;
     name: string;
-    defaultBalance: number;
+    email: string;
+    jobRole: string;
+    isAdmin: boolean;
     levelId: {
       _id: string;
       name: string;
@@ -29,68 +32,78 @@ interface EditLeaveTypeModalProps {
 interface FormValues {
   _id: string;
   name: string;
-  defaultBalance: number;
+  email: string;
+  jobRole: string;
   levelId: string;
+  isAdmin: boolean;
 }
 
-export default function EditLeaveTypeModal({
+export default function EditEmployeeModal({
   isOpen,
   onClose,
   onSubmit,
-  leaveType,
+  employee,
   isSubmitting,
-}: EditLeaveTypeModalProps) {
+}: EditEmployeeModalProps) {
   const {
     register,
     handleSubmit,
+    formState: { errors },
     setValue,
     clearErrors,
-    formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      _id: leaveType._id,
-      name: leaveType.name,
-      defaultBalance: leaveType.defaultBalance,
-      levelId: leaveType.levelId._id,
+      _id: employee._id,
+      name: employee.name,
+      email: employee.email,
+      jobRole: employee.jobRole,
+      isAdmin: employee?.isAdmin,
+      levelId: employee?.levelId?._id ? employee.levelId._id : "",
     },
   });
 
   const handleFormSubmit = async (data: FormValues) => {
-    await onSubmit({
-      _id: data._id,
-      name: data.name,
-      defaultBalance: data.defaultBalance,
-      levelId: data.levelId,
-    });
+    await onSubmit(data);
   };
 
   return (
-    <Modal heading="Edit Leave Type" isOpen={isOpen} onClose={onClose}>
+    <Modal heading="Update Employee" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Leave Name</label>
-          <input
+          <label className="block text-sm font-medium mb-1">Name</label>
+          <Input
+            disabled
             type="text"
-            {...register("name", { required: "Leave name is required" })}
+            {...register("name")}
             className="w-full p-2 border rounded"
           />
           {errors.name && (
             <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
           )}
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Balance</label>
-          <input
-            type="number"
-            {...register("defaultBalance", {
-              required: "Balance is required",
-              min: { value: 0, message: "Balance must be at least 0" },
-            })}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Email</label>
+          <Input
+            disabled
+            type="email"
+            {...register("email")}
             className="w-full p-2 border rounded"
           />
-          {errors.defaultBalance && (
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+          )}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Job Role</label>
+          <Input
+            disabled
+            type="text"
+            {...register("jobRole")}
+            className="w-full p-2 border rounded"
+          />
+          {errors.jobRole && (
             <p className="text-red-500 text-sm mt-1">
-              {errors.defaultBalance.message}
+              {errors.jobRole.message}
             </p>
           )}
         </div>
@@ -99,7 +112,7 @@ export default function EditLeaveTypeModal({
           <label className="block text-sm font-medium mb-1">Level</label>
           <SearchableDropdown
             searchInputPlaceholder="Search for a level"
-            placeholder={leaveType?.levelId?.name || "Select a Level"}
+            placeholder={employee?.levelId?.name || "Select a Level"}
             fetchOptions={handleFetchLevels}
             onChange={(value) => {
               console.log("Selected Level ID:", value);
@@ -122,7 +135,7 @@ export default function EditLeaveTypeModal({
           )}
         </div>
 
-        <div className="mt-6 flex justify-center gap-4">
+        <div className="mt-6 flex justify-end gap-4">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

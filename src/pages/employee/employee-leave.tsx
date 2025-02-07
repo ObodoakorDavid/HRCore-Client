@@ -4,23 +4,10 @@ import { PlusCircle } from "lucide-react";
 import ApplyLeaveModal from "./modals/apply-leave-modal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { formatDate } from "@/lib/utils";
-import { applyForLeave, getLeaves } from "@/api/leave.api";
-import { ApplyLeaveFormData } from "@/types/leave.types";
-
-interface Leave {
-  _id: string;
-  employeeName: string;
-  status: string;
-  startDate: string;
-  resumptionDate: string;
-  employee: {
-    name: string;
-  };
-  lineManager: {
-    name: string;
-  };
-}
+import { formatDate, getStatusClasses } from "@/lib/utils";
+import { applyForLeave, getEmployeeLeaves } from "@/api/leave.api";
+import { ApplyLeaveFormData, Leave } from "@/types/leave.types";
+import { Link } from "react-router-dom";
 
 export default function EmployeeLeave() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
@@ -28,7 +15,7 @@ export default function EmployeeLeave() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["leaves"],
-    queryFn: getLeaves,
+    queryFn: getEmployeeLeaves,
   });
 
   const applyLeaveMutation = useMutation({
@@ -39,6 +26,7 @@ export default function EmployeeLeave() {
       queryClient.invalidateQueries({ queryKey: ["leaves"] });
     },
     onError: (error) => {
+      console.log(error);
       toast.error(error.message || "Failed to apply");
     },
   });
@@ -71,11 +59,13 @@ export default function EmployeeLeave() {
               <th className="text-left p-2 border">Start Date</th>
               <th className="text-left p-2 border">Resumption Date</th>
               <th className="text-left p-2 border">Status</th>
+              <th className="text-left p-2 border">Action</th>
             </tr>
           </thead>
           <tbody>
             {data.leaveRequests.length > 0 ? (
               data.leaveRequests.map((leave: Leave) => {
+                const statusClass = getStatusClasses(leave.status);
                 return (
                   <tr key={leave._id} className="hover:bg-gray-50 text-left">
                     <td className="p-2 border">{leave.employee?.name}</td>
@@ -86,7 +76,16 @@ export default function EmployeeLeave() {
                     <td className="p-2 border">
                       {formatDate(leave.resumptionDate)}
                     </td>
-                    <td className="p-2 border capitalize">{leave.status}</td>
+                    <td className={`p-2 border capitalize ${statusClass}`}>
+                      {leave.status}
+                    </td>
+                    <td className={`p-2 border capitalize`}>
+                      <Button variant={"outline"}>
+                        <Link to={`/dashboard/employee/leave/${leave._id}`}>
+                          View
+                        </Link>
+                      </Button>
+                    </td>
                   </tr>
                 );
               })

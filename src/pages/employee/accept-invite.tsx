@@ -1,66 +1,3 @@
-// import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
-// import { useEffect, useState } from "react";
-// import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-// import { toast } from "sonner";
-
-// export default function AcceptInvite() {
-//   const [searchParams] = useSearchParams();
-//   const [error, setError] = useState({ state: false, message: "" });
-//   const { tenantId } = useParams<{ tenantId: string }>();
-
-//   const { isSubmitting } = useEmployeeStore();
-//   const { acceptInvite } = useEmployeeActions();
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const token = searchParams.get("token");
-
-//     if (!token) {
-//       setError({
-//         state: true,
-//         message: "Link is broken or missing required parameters.",
-//       });
-//       return;
-//     }
-
-//     const onSuccess = () => {
-//       toast.success("Invite Accepted!");
-//       navigate(`/login`, { replace: true });
-//     };
-
-//     const onError = (message: string) => {
-//       setError({
-//         state: true,
-//         message,
-//       });
-//     };
-
-//     acceptInvite({ tenantId, token }, onSuccess, onError);
-//   }, [searchParams, tenantId, acceptInvite, navigate]);
-
-//   if (isSubmitting) {
-//     return (
-//       <div className="bg-gray-100 min-h-screen">
-//         <p className="py-4 font-semibold">One moment, accepting invite...</p>
-//       </div>
-//     );
-//   }
-
-//   if (error.state) {
-//     return (
-//       <div className="bg-gray-100 min-h-screen">
-//         <p className="py-4 font-semibold">{error.message}</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="bg-gray-100 min-h-screen">
-//       <p className="py-4 font-semibold">One moment, processing...</p>
-//     </div>
-//   );
-// }
 
 import { acceptInvite } from "@/api/employee.api";
 import { useQuery } from "@tanstack/react-query";
@@ -75,6 +12,9 @@ export default function AcceptInvite() {
 
   const token = searchParams.get("token");
 
+  const isTenantIdValid =
+    typeof tenantId === "string" && tenantId.trim() !== "";
+
   const {
     isPending, // Loading state
     isError, // Error state
@@ -86,6 +26,11 @@ export default function AcceptInvite() {
       if (!token) {
         throw new Error("Link is broken or missing required parameters.");
       }
+
+      if (!isTenantIdValid) {
+        throw new Error("Invalid clientId.");
+      }
+
       return acceptInvite({ tenantId, token }); // Call the API function
     },
     retry: false, // Disable retries for this query
@@ -117,7 +62,7 @@ export default function AcceptInvite() {
   if (isError) {
     return (
       <div className="bg-gray-100 min-h-screen">
-        <p className="py-4 font-semibold">{error.message}</p>
+        <p className="py-4 font-semibold">{error.message} FFF</p>
       </div>
     );
   }

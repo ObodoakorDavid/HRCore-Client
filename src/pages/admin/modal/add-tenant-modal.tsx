@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 interface AddTenantFormValues {
   name: string;
   email: string;
-  logo: string;
+  logo: File;
   color: string;
 }
 
@@ -62,7 +62,8 @@ const AddTenantModal: FC<AddTenantModalProps> = ({
         <div className="mb-4">
           <label className="block text-sm font-medium">Logo</label>
           <Input
-            type="text"
+            type="file"
+            accept="image/png, image/jpeg"
             {...register("logo", { required: "Image URL is required" })}
           />
           {errors.logo && (

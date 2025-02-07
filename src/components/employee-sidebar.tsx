@@ -2,9 +2,10 @@ import {
   User,
   LogOut,
   ChevronDown,
-  Backpack,
   LayoutDashboardIcon,
   FilePenLine,
+  FileStack,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,7 +36,7 @@ const routes: Route[] = [
   {
     name: "Leave",
     path: "/dashboard/employee/leave",
-    icon: <Backpack className="w-5 h-5" />,
+    icon: <FileStack className="w-5 h-5" />,
     submenu: [
       {
         name: "Leave Request",
@@ -51,13 +52,13 @@ const routes: Route[] = [
   },
 ];
 
-// const bottomRoutes: Route[] = [
-//   {
-//     name: "Settings",
-//     path: "/dashboard/settings",
-//     icon: <Settings className="w-5 h-5" />,
-//   },
-// ];
+const adminRoutes: Route[] = [
+  {
+    name: "All Leaves",
+    path: "/dashboard/employee/leave/all-leaves",
+    icon: <FileStack className="w-5 h-5" />,
+  },
+];
 
 export default function EmployeeSidebar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -162,27 +163,34 @@ export default function EmployeeSidebar() {
             </li>
           ))}
         </ul>
-      </nav>
 
-      {/* <div className="px-4 flex-end">
-        <Separator className="my-2" />
-        <ul className="space-y-2">
-          {bottomRoutes.map((route, index) => (
-            <li key={index}>
-              <Link
-                to={route.path}
-                className={cn(
-                  "flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 text-gray-700",
-                  isActive(route.path) && "bg-gray-200 text-gray-900"
-                )}
-              >
-                {route.icon}
-                <span>{route.name}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div> */}
+        {/* Admin Routes (only visible if employee.isAdmin is true) */}
+        {employee?.isAdmin && (
+          <>
+            <Separator className="my-2" />
+            <div className="font-semibold text-sm text-gray-500 text-left">
+              Admin
+            </div>
+            <ul className="space-y-2 mt-2">
+              {adminRoutes.map((route, index) => (
+                <li key={index}>
+                  <Link
+                    to={route.path}
+                    className={cn(
+                      "flex items-center space-x-3 p-2 hover:bg-gray-100 text-gray-700",
+                      isActive(route.path) &&
+                        "bg-gray-200 text-gray-900 border-l-4 border-black"
+                    )}
+                  >
+                    {route.icon}
+                    <span>{route.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </nav>
 
       <div className="relative">
         <Separator className="my-2" />

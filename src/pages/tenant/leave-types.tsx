@@ -88,11 +88,13 @@ export default function LeaveTypes() {
         <tbody>
           {leaveTypes.map((leaveType: any) => (
             <tr key={leaveType._id} className="hover:bg-gray-50">
-              <td className="text-left p-2 border">{leaveType.name}</td>
+              <td className="text-left p-2 border capitalize">
+                {leaveType.name}
+              </td>
               <td className="text-left p-2 border">
                 {leaveType.defaultBalance}
               </td>
-              <td className="text-left p-2 border">
+              <td className="text-left p-2 border capitalize">
                 {leaveType?.levelId?.name}
               </td>
               <td className="text-left p-2 border flex items-center gap-2">
