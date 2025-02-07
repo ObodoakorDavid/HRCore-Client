@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
-import { formatDate, formatDate1 } from "@/lib/utils";
+import { formatDate1 } from "@/lib/utils";
 import { Leave } from "@/types/leave.types";
 import { useState } from "react";
 

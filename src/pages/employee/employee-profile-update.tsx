@@ -5,7 +5,7 @@ import FileUpload from "@/components/file-upload";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { handleFetchEmployees } from "@/lib/utils";
 import { updateEmployeeProfileAPI } from "@/api/employee.api";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ export default function EmployeeProfileUpdate() {
   console.log(employee);
 
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
 
   const {
     register,

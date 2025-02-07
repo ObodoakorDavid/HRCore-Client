@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
-import axiosInstance from "@/lib/axios.config";
 import { handleFetchLevels } from "@/lib/utils";
 
 interface EditLeaveTypeModalProps {

@@ -13,7 +13,6 @@ import EmployeeLayout from "./layouts/employee-layout";
 import EmployeeDashboard from "./pages/employee/employee-dashboard";
 import EmployeeGuard, { IsEmployeeAdmin } from "./guards/employee-guard";
 import AcceptInvite from "./pages/employee/accept-invite";
-import EmployeeRoles from "./pages/tenant/employee-roles";
 import AdminLogin from "./pages/admin/admin-login";
 import AdminGuard from "./guards/admin-guard";
 import AdminLayout from "./layouts/admin-layout";
@@ -81,10 +80,6 @@ function App() {
             {
               path: "employee/invite",
               element: <EmployeeInvites />,
-            },
-            {
-              path: "employee/roles",
-              element: <EmployeeRoles />,
             },
             {
               path: "employee/:employeeId",

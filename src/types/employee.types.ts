@@ -8,6 +8,10 @@ export interface Employee {
   jobRole: string;
   isOnLeave: boolean;
   isAdmin: boolean;
+  tenantId: {
+    name: string;
+    logo: string;
+  };
   lineManager: Employee;
   reliever: Employee;
   levelId: {

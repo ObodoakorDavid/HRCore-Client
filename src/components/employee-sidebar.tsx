@@ -5,7 +5,6 @@ import {
   LayoutDashboardIcon,
   FilePenLine,
   FileStack,
-  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -199,16 +198,16 @@ export default function EmployeeSidebar() {
           onClick={toggleProfileDropdown}
         >
           <div>
-            <p className="text-sm text-gray-500">{employee.name}</p>
+            <p className="text-sm text-gray-500">{employee?.name}</p>
           </div>
         </div>
 
         {profileDropdownOpen && (
           <div className="absolute bottom-16 left-40 p-4 bg-white border shadow-md rounded-md">
             <div>
-              <p className="font-semibold">{employee.name}</p>
-              <p className="text-sm text-gray-500">{employee.jobRole}</p>
-              <p className="text-sm text-gray-500">{employee.email}</p>
+              <p className="font-semibold">{employee?.name}</p>
+              <p className="text-sm text-gray-500">{employee?.jobRole}</p>
+              <p className="text-sm text-gray-500">{employee?.email}</p>
             </div>
           </div>
         )}
