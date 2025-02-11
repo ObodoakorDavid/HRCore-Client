@@ -1,28 +1,39 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
+import { addLevel } from "@/api/level.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface AddLevelModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { name: string }) => Promise<void>;
-  isSubmitting: boolean;
 }
 
-export default function AddLevelModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  isSubmitting,
-}: AddLevelModalProps) {
+export default function AddLevelModal({ isOpen, onClose }: AddLevelModalProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{ name: string }>();
 
+  const addMutation = useMutation({
+    mutationFn: addLevel,
+    onSuccess: () => {
+      toast.success("Level Added successfully");
+      queryClient.invalidateQueries({ queryKey: ["levels"] });
+      onClose();
+    },
+    onError: (error) => {
+      toast.success("Something went wrong");
+      console.error("Failed to add level", error);
+    },
+  });
+
   const handleFormSubmit = async (data: { name: string }) => {
-    await onSubmit(data);
+    await addMutation.mutateAsync(data);
   };
 
   return (
@@ -44,8 +55,8 @@ export default function AddLevelModal({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add Level"}
+          <Button type="submit" disabled={addMutation.isPending}>
+            {addMutation.isPending ? "Adding..." : "Add Level"}
           </Button>
         </div>
       </form>

@@ -1,9 +1,13 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { employeeSignIn } from "@/api/employee.api";
+import { useEmployeeActions } from "@/store/useEmployeeStore";
+import { Employee } from "@/types/employee.types";
 
 interface SignInFormInputs {
   email: string;
@@ -11,10 +15,8 @@ interface SignInFormInputs {
 }
 
 export default function EmployeeLogin() {
-  const { isSubmitting } = useEmployeeStore();
-  const { employeeSignin } = useEmployeeActions();
-
   const navigate = useNavigate();
+  const { setAuthEmployee } = useEmployeeActions();
 
   const {
     register,
@@ -22,10 +24,20 @@ export default function EmployeeLogin() {
     formState: { errors },
   } = useForm<SignInFormInputs>();
 
-  const onSubmit: SubmitHandler<SignInFormInputs> = async (data) => {
-    await employeeSignin({ ...data }, () => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: employeeSignIn,
+    onSuccess: (data) => {
+      setAuthEmployee(data.data.employee as Employee);
+      toast.success("Login successful!");
       navigate("/dashboard/employee");
-    });
+    },
+    onError: () => {
+      toast.error("Login failed. Please check your credentials.");
+    },
+  });
+
+  const onSubmit: SubmitHandler<SignInFormInputs> = (data) => {
+    mutate(data);
   };
 
   return (
@@ -71,8 +83,8 @@ export default function EmployeeLogin() {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Logging in..." : "Login"}
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Logging in..." : "Login"}
           </Button>
           <div className="py-4 text-end">
             <Link to="/forgot-password" className="font-semibold underline">

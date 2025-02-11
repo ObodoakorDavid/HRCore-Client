@@ -1,4 +1,5 @@
 import { getEmployeeDetails } from "@/api/employee.api";
+import { Loader } from "@/components/loader";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 
@@ -15,7 +16,7 @@ export default function EmployeeDetail() {
     queryFn: () => getEmployeeDetails(employeeId),
   });
 
-  if (isLoading) return <div>Loading employee details...</div>;
+  if (isLoading) return <Loader isLoading={isLoading} />;
   if (isError) return <div>Error fetching details: {error.message}</div>;
 
   return (

@@ -1,42 +1,70 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Eye, PlusCircle } from "lucide-react";
 import ApplyLeaveModal from "./modals/apply-leave-modal";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 import { formatDate, getStatusClasses } from "@/lib/utils";
-import { applyForLeave, getEmployeeLeaves } from "@/api/leave.api";
-import { ApplyLeaveFormData, Leave } from "@/types/leave.types";
-import { Link } from "react-router-dom";
+import { getEmployeeLeaves } from "@/api/leave.api";
+import { Link, useSearchParams } from "react-router-dom";
+import DataTable from "@/components/table";
 
 export default function EmployeeLeave() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const queryClient = useQueryClient();
 
+  const [searchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+  
   const { data, isLoading } = useQuery({
-    queryKey: ["leaves"],
-    queryFn: getEmployeeLeaves,
+    queryKey: ["employee-leaves", { page, limit }],
+    queryFn: () => getEmployeeLeaves({ page, limit }),
   });
 
-  const applyLeaveMutation = useMutation({
-    mutationFn: applyForLeave,
-    onSuccess: () => {
-      toast.success("Leave appllied");
-      closeApplyModal();
-      queryClient.invalidateQueries({ queryKey: ["leaves"] });
+  const columns = [
+    {
+      header: "Name",
+      accessor: "employee.name",
+      render: (_: any, row: any) => row.employee?.name || "N/A",
     },
-    onError: (error) => {
-      console.log(error);
-      toast.error(error.message || "Failed to apply");
+    {
+      header: "Line Manager",
+      accessor: "lineManager.name",
+      render: (_: any, row: any) => row.lineManager?.name || "N/A",
     },
-  });
+    {
+      header: "Start Date",
+      accessor: "startDate",
+      render: (value: string) => {
+        return formatDate(value);
+      },
+    },
+    {
+      header: "Resumption Date",
+      accessor: "resumptionDate",
+      render: (value: string) => formatDate(value),
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      isStatus: true,
+      render: (value: string) => (
+        <span className={`capitalize ${getStatusClasses(value)}`}>{value}</span>
+      ),
+    },
+    {
+      header: "Action",
+      render: (_: any, row: any) => (
+        <div className="flex gap-2">
+          <Link to={`/dashboard/employee/leave/${row._id}`}>
+            <Eye />
+          </Link>
+        </div>
+      ),
+    },
+  ];
 
   const openApplyModal = () => setIsApplyModalOpen(true);
   const closeApplyModal = () => setIsApplyModalOpen(false);
-
-  const handleApplyLeave = async (data: ApplyLeaveFormData) => {
-    applyLeaveMutation.mutate(data);
-  };
 
   return (
     <div className="">
@@ -48,64 +76,15 @@ export default function EmployeeLeave() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="text-center p-4">Loading leaves...</div>
-      ) : (
-        <table className="min-w-full bg-white border rounded-md shadow">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left p-2 border">Name</th>
-              <th className="text-left p-2 border">Line Manager</th>
-              <th className="text-left p-2 border">Start Date</th>
-              <th className="text-left p-2 border">Resumption Date</th>
-              <th className="text-left p-2 border">Status</th>
-              <th className="text-left p-2 border">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.leaveRequests.length > 0 ? (
-              data.leaveRequests.map((leave: Leave) => {
-                const statusClass = getStatusClasses(leave.status);
-                return (
-                  <tr key={leave._id} className="hover:bg-gray-50 text-left">
-                    <td className="p-2 border">{leave.employee?.name}</td>
-                    <td className="p-2 border">{leave.lineManager?.name}</td>
-                    <td className="p-2 border">
-                      {formatDate(leave.startDate)}
-                    </td>
-                    <td className="p-2 border">
-                      {formatDate(leave.resumptionDate)}
-                    </td>
-                    <td className={`p-2 border capitalize ${statusClass}`}>
-                      {leave.status}
-                    </td>
-                    <td className={`p-2 border capitalize`}>
-                      <Button variant={"outline"}>
-                        <Link to={`/dashboard/employee/leave/${leave._id}`}>
-                          View
-                        </Link>
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={4} className="p-4 text-center">
-                  No leaves found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-
-      <ApplyLeaveModal
-        isOpen={isApplyModalOpen}
-        onClose={closeApplyModal}
-        onSubmit={handleApplyLeave}
-        isSubmitting={applyLeaveMutation.isPending}
+      <DataTable
+        columns={columns}
+        data={data?.leaveRequests || []}
+        isLoading={isLoading}
+        noDataMessage="No leaves found."
+        pagination={data?.pagination}
       />
+
+      <ApplyLeaveModal isOpen={isApplyModalOpen} onClose={closeApplyModal} />
     </div>
   );
 }

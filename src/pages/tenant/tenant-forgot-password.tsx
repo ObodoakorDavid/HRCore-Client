@@ -2,17 +2,16 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useTenantActions, useTenantStore } from "@/store/useTenantStore";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { tenantSendPasswordResetLink } from "@/api/tenant.api";
 
 interface ForgotPasswordFormInputs {
   email: string;
 }
 
 export default function TenantForgotPassword() {
-  const { isSubmitting } = useTenantStore();
-  const { forgotPassword } = useTenantActions();
-
   const navigate = useNavigate();
 
   const {
@@ -21,10 +20,20 @@ export default function TenantForgotPassword() {
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>();
 
-  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
-    await forgotPassword(data.email, () => {
+  const passwordResetMutation = useMutation({
+    mutationFn: tenantSendPasswordResetLink,
+    onSuccess: () => {
+      toast.success("Password reset link sent successfully!");
       navigate("/tenant/login");
-    });
+    },
+    onError: (error) => {
+      toast.error("Something went wrong");
+      console.error("Failed to send password reset link", error);
+    },
+  });
+
+  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
+    await passwordResetMutation.mutateAsync(data);
   };
 
   return (
@@ -51,8 +60,14 @@ export default function TenantForgotPassword() {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Requesting..." : "Request Password Reset"}
+          <Button
+            type="submit"
+            disabled={passwordResetMutation.isPending}
+            className="w-full"
+          >
+            {passwordResetMutation.isPending
+              ? "Requesting..."
+              : "Request Password Reset"}
           </Button>
           <div className="py-4 text-center">
             <Link to="/tenant/login" className="font-semibold underline">

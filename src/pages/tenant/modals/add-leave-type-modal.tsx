@@ -2,25 +2,22 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
-import axiosInstance from "@/lib/axios.config";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addLeaveType } from "@/api/leave.api";
+import { toast } from "sonner";
+import { handleFetchLevels } from "@/lib/utils";
 
 interface AddLeaveTypeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    name: string;
-    defaultBalance: number;
-    levelId: string;
-  }) => Promise<void>;
-  isSubmitting: boolean;
 }
 
 export default function AddLeaveTypeModal({
   isOpen,
   onClose,
-  onSubmit,
-  isSubmitting,
 }: AddLeaveTypeModalProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -30,34 +27,26 @@ export default function AddLeaveTypeModal({
     reset,
   } = useForm<{ name: string; defaultBalance: number; levelId: string }>();
 
+  const addMutation = useMutation({
+    mutationFn: addLeaveType,
+    onSuccess: () => {
+      toast.success("Leave Type Added successfully");
+      queryClient.invalidateQueries({ queryKey: ["leaveTypes"] });
+      reset();
+      onClose();
+    },
+    onError: (error) => {
+      toast.error("Something went wrong");
+      console.error("Failed to add leave type", error);
+    },
+  });
+
   const handleFormSubmit = async (data: {
     name: string;
     defaultBalance: number;
     levelId: string;
   }) => {
-    try {
-      await onSubmit(data);
-      reset();
-    } catch (error) {
-      console.error("Error submitting form:", error);
-    }
-  };
-
-  const handleFetchOptions = async (search: string) => {
-    try {
-      const response = await axiosInstance.get(
-        `/level?search=${encodeURIComponent(search)}&limit=5`
-      );
-
-      const levels = response?.data?.data?.levels;
-
-      return levels?.map((item: { _id: string; name: string }) => ({
-        value: item._id,
-        label: item.name,
-      }));
-    } catch {
-      return [];
-    }
+    await addMutation.mutateAsync(data);
   };
 
   return (
@@ -99,7 +88,7 @@ export default function AddLeaveTypeModal({
           <label className="block text-sm font-medium mb-1">Level</label>
           <SearchableDropdown
             placeholder="Search and select a Level"
-            fetchOptions={handleFetchOptions}
+            fetchOptions={handleFetchLevels}
             onChange={(value) => {
               console.log("Selected Level ID:", value);
               setValue("levelId", value);
@@ -126,8 +115,8 @@ export default function AddLeaveTypeModal({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add Leave Type"}
+          <Button type="submit" disabled={addMutation.isPending}>
+            {addMutation.isPending ? "Adding..." : "Add Leave Type"}
           </Button>
         </div>
       </form>

@@ -1,3 +1,4 @@
+import { AuthLoader } from "@/components/loader";
 import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
 import { useEffect } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ export default function AdminGuard() {
   }, [getAdmin, navigate]);
 
   if (isFetchingAdmin || !admin) {
-    return <div className="mt-2">Loading...</div>;
+    return <AuthLoader isLoading={isFetchingAdmin} />;
   }
 
   return admin ? <Outlet /> : <Navigate to="/admin/login" replace />;

@@ -6,15 +6,11 @@ import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { cn } from "@/lib/utils";
 import { updateEmployeeProfileAPI } from "@/api/employee.api";
 import { toast } from "sonner";
+import { UserCheck, UserX } from "lucide-react";
 
 export default function EmployeeProfile() {
   const { employee } = useEmployeeStore();
   const { getEmployeeDetails } = useEmployeeActions();
-
-  // const { data: employee } = useQuery<Employee, Error>({
-  //   queryKey: ["employee"],
-  //   queryFn: getLoggedInEmployee,
-  // });
 
   const { data: leaveBalance } = useQuery({
     queryKey: ["leaveBalance"],
@@ -22,17 +18,15 @@ export default function EmployeeProfile() {
   });
 
   const handleDownload = (url: string) => {
-    // Trigger download by creating an anchor tag programmatically
     const link = document.createElement("a");
     link.href = url;
-    link.download = url; // Optional: Set the filename based on the URL
+    link.download = url;
     link.click();
   };
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateEmployeeProfileAPI,
     onSuccess: () => {
-      // queryClient.invalidateQueries(["employees"]);
       getEmployeeDetails();
     },
     onError: (error) => {
@@ -101,14 +95,28 @@ export default function EmployeeProfile() {
               {employee?.levelId?.name ?? "N/A"}
             </span>
           </p>
-          <p className="text-gray-600">
-            <span className="font-semibold">Line Manger: </span>
+          <p className="text-gray-600 flex gap-2 items-center">
+            <span className="font-semibold">Line Manager: </span>
             {(employee?.lineManager?.name || employee?.lineManager?.email) ??
-              "N/A"}
+              "N/A"}{" "}
+            {employee?.lineManager ? (
+              employee?.lineManager?.isOnLeave ? (
+                <UserX className="text-red-500" />
+              ) : (
+                <UserCheck className="text-green-500" />
+              )
+            ) : null}
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-600 flex gap-2 items-center">
             <span className="font-semibold">Reliever: </span>
             {(employee?.reliever?.name || employee?.reliever?.email) ?? "N/A"}
+            {employee?.reliever ? (
+              employee?.reliever?.isOnLeave ? (
+                <UserX className="text-red-500" />
+              ) : (
+                <UserCheck className="text-green-500" />
+              )
+            ) : null}
           </p>
         </div>
 

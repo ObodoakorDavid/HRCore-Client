@@ -1,22 +1,23 @@
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { editLevel } from "@/api/level.api";
 
 interface EditLevelModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { _id: string; name: string }) => Promise<void>;
-  isSubmitting: boolean;
   level: { _id: string; name: string };
 }
 
 export default function EditLevelModal({
   isOpen,
   onClose,
-  onSubmit,
-  isSubmitting,
   level,
 }: EditLevelModalProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -25,8 +26,21 @@ export default function EditLevelModal({
     defaultValues: { _id: level._id, name: level.name },
   });
 
+  const editMutation = useMutation({
+    mutationFn: editLevel,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["levels"] });
+      toast.success("Level updated successfully");
+      onClose();
+    },
+    onError: (error) => {
+      toast.success("Something went wrong");
+      console.error("Failed to update level", error);
+    },
+  });
+
   const handleFormSubmit = async (data: { _id: string; name: string }) => {
-    await onSubmit(data);
+    await editMutation.mutateAsync(data);
   };
 
   return (
@@ -48,8 +62,8 @@ export default function EditLevelModal({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button type="submit" disabled={editMutation.isPending}>
+            {editMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </form>

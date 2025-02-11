@@ -3,16 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
 import { handleFetchLevels } from "@/lib/utils";
+import { toast } from "sonner";
+import { editLeaveType } from "@/api/leave.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface EditLeaveTypeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    _id: string;
-    name: string;
-    defaultBalance: number;
-    levelId: string;
-  }) => Promise<void>;
   leaveType: {
     _id: string;
     name: string;
@@ -22,7 +19,6 @@ interface EditLeaveTypeModalProps {
       name: string;
     };
   };
-  isSubmitting: boolean;
 }
 
 interface FormValues {
@@ -35,10 +31,10 @@ interface FormValues {
 export default function EditLeaveTypeModal({
   isOpen,
   onClose,
-  onSubmit,
   leaveType,
-  isSubmitting,
 }: EditLeaveTypeModalProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -54,13 +50,21 @@ export default function EditLeaveTypeModal({
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: editLeaveType,
+    onSuccess: () => {
+      toast.success("Leave Type Added successfully");
+      queryClient.invalidateQueries({ queryKey: ["leaveTypes"] });
+      onClose();
+    },
+    onError: (error) => {
+      toast.error("Something went wrong");
+      console.error("Failed to add leave type", error);
+    },
+  });
+
   const handleFormSubmit = async (data: FormValues) => {
-    await onSubmit({
-      _id: data._id,
-      name: data.name,
-      defaultBalance: data.defaultBalance,
-      levelId: data.levelId,
-    });
+    await editMutation.mutateAsync(data);
   };
 
   return (
@@ -125,8 +129,8 @@ export default function EditLeaveTypeModal({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button type="submit" disabled={editMutation.isPending}>
+            {editMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </form>

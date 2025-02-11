@@ -26,7 +26,6 @@ import TenantResetPassword from "./pages/tenant/tenant-reset-password";
 import LandingPage from "./pages/public/landing-page";
 import EmployeeProfileUpdate from "./pages/employee/employee-profile-update";
 import TenantLeave from "./pages/tenant/tenant-leave";
-// import LeaveHistory from "./pages/tenant/leave-history";
 import Levels from "./pages/tenant/level";
 import LeaveTypes from "./pages/tenant/leave-types";
 import EmployeeLeave from "./pages/employee/employee-leave";
@@ -126,6 +125,10 @@ function App() {
               element: <EmployeeLeaveRequests />,
             },
             {
+              path: "leave/leave-request/:leaveId",
+              element: <EmployeeLeaveDetail />,
+            },
+            {
               path: "leave/:leaveId",
               element: <EmployeeLeaveDetail />,
             },
@@ -142,8 +145,12 @@ function App() {
               element: <IsEmployeeAdmin />,
               children: [
                 {
-                  path: "leave/all-leaves",
+                  path: "all-leaves",
                   element: <AllLeaves />,
+                },
+                {
+                  path: "all-leaves/:leaveId",
+                  element: <EmployeeLeaveDetail />,
                 },
               ],
             },

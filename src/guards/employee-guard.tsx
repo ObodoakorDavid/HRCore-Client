@@ -1,3 +1,4 @@
+import { Loader } from "@/components/loader";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { useEffect } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
@@ -13,7 +14,7 @@ export default function EmployeeGuard() {
   }, [getEmployee, navigate]);
 
   if (isFetchingEmployee || !employee) {
-    return <div className="mt-2">Loading...</div>;
+    return <Loader isLoading={isFetchingEmployee} />;
   }
 
   return employee ? <Outlet /> : <Navigate to="/login" replace />;

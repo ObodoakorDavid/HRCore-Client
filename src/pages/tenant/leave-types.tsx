@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import AddLeaveTypeModal from "./modals/add-leave-type-modal";
 import EditLeaveTypeModal from "./modals/edit-leave-type-modal";
-import { useLeaveActions, useLeaveStore } from "@/store/useLeaveStore";
+import { useQuery } from "@tanstack/react-query";
+import { getLeaveTypes } from "@/api/leave.api";
+import { useSearchParams } from "react-router-dom";
+import DataTable from "@/components/table";
 
 interface LeaveType {
   _id: string;
@@ -20,17 +23,19 @@ interface DetailedLeaveType extends Omit<LeaveType, "levelId"> {
 }
 
 export default function LeaveTypes() {
+  const [searchParams] = useSearchParams();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedLeaveType, setSelectedLeaveType] =
     useState<DetailedLeaveType | null>(null);
 
-  const { leaveTypes, isSubmitting } = useLeaveStore();
-  const { addLeaveType, getLeaveTypes, editLeaveType } = useLeaveActions();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const search = searchParams.get("search") || "";
 
-  useEffect(() => {
-    getLeaveTypes();
-  }, [getLeaveTypes]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["leaveTypes", { page, limit: 10, search }],
+    queryFn: () => getLeaveTypes({ page, limit: 10, search }),
+  });
 
   const openAddModal = () => setIsAddModalOpen(true);
   const closeAddModal = () => setIsAddModalOpen(false);
@@ -44,27 +49,38 @@ export default function LeaveTypes() {
     setIsEditModalOpen(false);
   };
 
-  const handleAddLeaveType = async (data: Omit<LeaveType, "_id">) => {
-    await addLeaveType(data, () => {
-      closeAddModal();
-      getLeaveTypes();
-    });
-  };
-
-  const handleEditLeaveType = async (data: LeaveType) => {
-    console.log(data);
-
-    try {
-      await editLeaveType(data._id, data, () => {
-        closeEditModal();
-        getLeaveTypes();
-      });
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  console.log(leaveTypes);
+  const columns = [
+    {
+      header: "Leave Name",
+      accessor: "name",
+      render: (_: any, row: any) => row?.name || "N/A",
+    },
+    {
+      header: "Balance",
+      accessor: "defaultBalance",
+      render: (_: any, row: any) => `${row?.defaultBalance} days` || "N/A",
+      // render: (_: any, row: any) => row?.defaultBalance || "N/A",
+    },
+    {
+      header: "In",
+      accessor: "levelId",
+      render: (_: any, row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
+    },
+    {
+      header: "Action",
+      render: (_: any, row: any) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => openEditModal(row)}
+          >
+            Edit
+          </Button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="p-4">
@@ -76,55 +92,21 @@ export default function LeaveTypes() {
         </Button>
       </div>
 
-      <table className="min-w-full bg-white border rounded-md shadow">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="text-left p-2 border">Leave Name</th>
-            <th className="text-left p-2 border">Balance</th>
-            <th className="text-left p-2 border">In</th>
-            <th className="text-left p-2 border">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {leaveTypes.map((leaveType: any) => (
-            <tr key={leaveType._id} className="hover:bg-gray-50">
-              <td className="text-left p-2 border capitalize">
-                {leaveType.name}
-              </td>
-              <td className="text-left p-2 border">
-                {leaveType.defaultBalance}
-              </td>
-              <td className="text-left p-2 border capitalize">
-                {leaveType?.levelId?.name}
-              </td>
-              <td className="text-left p-2 border flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEditModal(leaveType)}
-                >
-                  Edit
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <AddLeaveTypeModal
-        isOpen={isAddModalOpen}
-        onClose={closeAddModal}
-        onSubmit={handleAddLeaveType}
-        isSubmitting={isSubmitting}
+      <DataTable
+        columns={columns}
+        data={data?.leaveTypes || []}
+        isLoading={isLoading}
+        noDataMessage="No leave type found."
+        pagination={data?.pagination}
       />
+
+      <AddLeaveTypeModal isOpen={isAddModalOpen} onClose={closeAddModal} />
 
       {selectedLeaveType && (
         <EditLeaveTypeModal
           isOpen={isEditModalOpen}
           onClose={closeEditModal}
-          onSubmit={handleEditLeaveType}
           leaveType={selectedLeaveType}
-          isSubmitting={isSubmitting}
         />
       )}
     </div>

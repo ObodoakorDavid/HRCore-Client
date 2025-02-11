@@ -1,54 +1,28 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useTenantActions, useTenantStore } from "@/store/useTenantStore";
-import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Clipboard } from "lucide-react";
-import CustomPagination from "@/components/custom-pagination";
 import InviteModal from "./modals/invite-modal";
 import BulkInviteModal from "./modals/bulk-invite-modal";
+import { useSearchParams } from "react-router-dom";
+import DataTable from "@/components/table";
+import { fetchAllInvites } from "@/api/tenant.api";
+import { formatDate, getStatusClasses } from "@/lib/utils";
 
 export default function EmployeeInvites() {
-  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-  const [isBulkInviteModalOpen, setIsBulkInviteModalOpen] = useState(false);
-  const { invites } = useTenantStore();
-  const { sendInviteLink, getAllLinks, bulkInvite } = useTenantActions();
-  const { isSubmitting, pagination } = useTenantStore();
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const page = searchParams.get("page");
-    if (!page) {
-      getAllLinks({ page: 1, limit: 10 });
-    } else {
-      getAllLinks({ page: page.toString(), limit: 10 });
-    }
-  }, [searchParams, getAllLinks]);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isBulkInviteModalOpen, setIsBulkInviteModalOpen] = useState(false);
 
-  const openInviteModal = () => setIsInviteModalOpen(true);
-  const closeInviteModal = () => setIsInviteModalOpen(false);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const search = searchParams.get("search") || "";
 
-  const openBulkInviteModal = () => setIsBulkInviteModalOpen(true);
-  const closeBulkInviteModal = () => setIsBulkInviteModalOpen(false);
-
-  const handleGenerateInvite = async (data: {
-    email: string;
-    expiresIn: number;
-  }) => {
-    await sendInviteLink({ ...data }, () => {
-      closeInviteModal();
-      getAllLinks({ page: 1, limit: 10 });
-    });
-  };
-
-  const handleBulkInvite = async (file: File) => {
-    console.log("Uploading file:", file);
-
-    await bulkInvite({ file }, () => {
-      closeBulkInviteModal();
-      getAllLinks({ page: 1, limit: 10 });
-    });
-  };
+  const { data, isLoading } = useQuery({
+    queryKey: ["invites", page, search],
+    queryFn: () => fetchAllInvites({ page, limit: 10, search }),
+  });
 
   const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(url).then(() => {
@@ -56,64 +30,79 @@ export default function EmployeeInvites() {
     });
   };
 
+  const columns = [
+    {
+      header: "Email",
+      accessor: "email",
+    },
+    {
+      header: "Expires At",
+      accessor: "expiresAt",
+      render: (_: any, row: any) => formatDate(row?.expiresAt) || "N/A",
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      isStatus: true,
+      render: (_: any, row: any) => (
+        <span className={`capitalize ${getStatusClasses(row?.status)}`}>
+          {row?.status}
+        </span>
+      ),
+    },
+    {
+      header: "URL",
+      accessor: "url",
+      render: (_: any, row: any) => {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="truncate">{row?.url?.slice(0, 20)}</span>
+            <button
+              className="text-blue-600 hover:text-blue-800"
+              onClick={() => copyToClipboard(row.url)}
+              aria-label="Copy URL"
+            >
+              <Clipboard size={16} />
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-lg font-semibold">Employee Invites</h1>
         <div className="flex gap-2">
-          <Button onClick={openInviteModal}>Generate Invite Link</Button>
-          <Button onClick={openBulkInviteModal} variant="outline">
+          <Button onClick={() => setIsInviteModalOpen(true)}>
+            Generate Invite Link
+          </Button>
+          <Button
+            onClick={() => setIsBulkInviteModalOpen(true)}
+            variant="outline"
+          >
             Bulk Invite
           </Button>
         </div>
       </div>
 
-      <table className="min-w-full bg-white border rounded-md shadow">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="text-left p-2 border">Email</th>
-            <th className="text-left p-2 border">Expires At</th>
-            <th className="text-left p-2 border">Status</th>
-            <th className="text-left p-2 border">URL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {invites.map((invite, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td className="text-left p-2 border">{invite.email}</td>
-              <td className="text-left p-2 border">
-                {new Date(invite.expiresAt).toLocaleDateString()}
-              </td>
-              <td className="text-left p-2 border">{invite.status}</td>
-              <td className="text-left p-2 border flex items-center gap-2">
-                <span className="truncate">{invite.url?.slice(0, 20)}</span>
-                <button
-                  className="text-blue-600 hover:text-blue-800"
-                  onClick={() => copyToClipboard(invite.url)}
-                  aria-label="Copy URL"
-                >
-                  <Clipboard size={16} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <CustomPagination pagination={pagination} />
+      <DataTable
+        columns={columns}
+        data={data?.links || []}
+        isLoading={isLoading}
+        noDataMessage="No invites found."
+        pagination={data?.pagination}
+      />
 
       <InviteModal
         isOpen={isInviteModalOpen}
-        onClose={closeInviteModal}
-        onSubmit={handleGenerateInvite}
-        isSubmitting={isSubmitting}
+        onClose={() => setIsInviteModalOpen(false)}
       />
 
       <BulkInviteModal
         isOpen={isBulkInviteModalOpen}
-        onClose={closeBulkInviteModal}
-        onSubmit={handleBulkInvite}
-        isSubmitting={isSubmitting}
+        onClose={() => setIsBulkInviteModalOpen(false)}
       />
     </div>
   );

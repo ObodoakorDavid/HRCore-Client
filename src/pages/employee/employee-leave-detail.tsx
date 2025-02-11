@@ -1,15 +1,18 @@
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getLeaveDetail, updateLeaveRequest } from "@/api/leave.api";
-import { formatDate1, getStatusClasses } from "@/lib/utils";
+import { formatDate, getStatusClasses } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Leave } from "@/types/leave.types";
 import LeaveRequestActionModal from "./modals/leave-request-action-modal";
 import { toast } from "sonner";
+import { Loader } from "@/components/loader";
+import { useEmployeeStore } from "@/store/useEmployeeStore";
 
 export default function EmployeeLeaveDetail() {
   const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const { employee } = useEmployeeStore();
 
   const { leaveId } = useParams<{ leaveId: string }>();
 
@@ -55,13 +58,12 @@ export default function EmployeeLeaveDetail() {
   };
 
   if (isLoading) {
-    return <div>Loading leave details...</div>;
+    return <Loader isLoading={isLoading} />;
   }
 
   if (isError) {
     return <div>Error: {(error as Error).message}</div>;
   }
-  console.log(leaveRequest);
 
   return (
     <div className="text-start">
@@ -75,11 +77,11 @@ export default function EmployeeLeaveDetail() {
         </p>
         <p>
           <strong>Start Date:</strong>{" "}
-          {formatDate1(leaveRequest?.startDate || "")}
+          {formatDate(leaveRequest?.startDate || "")}
         </p>
         <p>
           <strong>End Date:</strong>{" "}
-          {formatDate1(leaveRequest?.resumptionDate || "")}
+          {formatDate(leaveRequest?.resumptionDate || "")}
         </p>
         <p>
           <strong>Duration:</strong> {leaveRequest?.duration} Days
@@ -94,18 +96,20 @@ export default function EmployeeLeaveDetail() {
             {leaveRequest?.status}
           </span>
         </p>
-        {leaveRequest?.status.toLowerCase() == "pending" && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="w-fit my-2"
-            onClick={() => {
-              setIsActionModalOpen(true);
-            }}
-          >
-            Action
-          </Button>
-        )}
+        {leaveRequest?.status.toLowerCase() === "pending" &&
+          (leaveRequest.lineManager._id === employee?._id ||
+            employee?.isAdmin) && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-fit my-2"
+              onClick={() => {
+                setIsActionModalOpen(true);
+              }}
+            >
+              Action
+            </Button>
+          )}
       </div>
 
       <LeaveRequestActionModal

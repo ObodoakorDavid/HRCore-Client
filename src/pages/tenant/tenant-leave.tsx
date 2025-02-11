@@ -1,63 +1,66 @@
 import { getAllLeaves } from "@/api/leave.api";
+import DataTable from "@/components/table";
 import { formatDate, getStatusClasses } from "@/lib/utils";
-import { Leave } from "@/types/leave.types";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
 export default function TenantLeave() {
+  const [searchParams] = useSearchParams();
+
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const search = searchParams.get("search") || "";
+
   const { data, isLoading } = useQuery({
-    queryKey: ["leaves"],
-    queryFn: getAllLeaves,
+    queryKey: ["leaves", { page, limit: 10, search }],
+    queryFn: () => getAllLeaves({ page, limit: 10, search }),
   });
+
+  const columns = [
+    {
+      header: "Name",
+      // accessor: "employee.name",
+      render: (_: any, row: any) => row?.employee?.name || "N/A",
+    },
+    {
+      header: "Line Manager",
+      // accessor: "lineManager",
+      render: (_: any, row: any) => row?.lineManager?.name || "N/A",
+    },
+    {
+      header: "Start Data",
+      // accessor: "startDate",
+      render: (_: any, row: any) => formatDate(row?.startDate) || "N/A",
+    },
+    {
+      header: "Resumption Date",
+      // accessor: "resumptionDate",
+      render: (_: any, row: any) => formatDate(row?.resumptionDate) || "N/A",
+    },
+    {
+      header: "Status",
+      accessor: "status",
+      isStatus: true,
+      render: (_: any, row: any) => (
+        <span className={`capitalize ${getStatusClasses(row?.status)}`}>
+          {row?.status}
+        </span>
+      ),
+    },
+  ];
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-lg font-semibold">Leave History</h1>
       </div>
-      {isLoading ? (
-        <div className="text-center p-4">Loading leaves...</div>
-      ) : (
-        <table className="min-w-full bg-white border rounded-md shadow">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-left p-2 border">Name</th>
-              <th className="text-left p-2 border">Line Manager</th>
-              <th className="text-left p-2 border">Start Date</th>
-              <th className="text-left p-2 border">Resumption Date</th>
-              <th className="text-left p-2 border">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.leaveRequests.length > 0 ? (
-              data.leaveRequests.map((leave: Leave) => {
-                const statusClass = getStatusClasses(leave.status);
 
-                return (
-                  <tr key={leave._id} className="hover:bg-gray-50 text-left">
-                    <td className="p-2 border">{leave.employee?.name}</td>
-                    <td className="p-2 border">{leave.lineManager?.name}</td>
-                    <td className="p-2 border">
-                      {formatDate(leave.startDate)}
-                    </td>
-                    <td className="p-2 border">
-                      {formatDate(leave.resumptionDate)}
-                    </td>
-                    <td className={`p-2 border capitalize ${statusClass}`}>
-                      {leave.status}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={5} className="p-4 text-center">
-                  No leaves found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
+      <DataTable
+        columns={columns}
+        data={data?.leaveRequests || []}
+        isLoading={isLoading}
+        noDataMessage="No leave request found."
+        pagination={data?.pagination}
+      />
     </div>
   );
 }

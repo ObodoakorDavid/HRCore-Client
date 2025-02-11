@@ -2,8 +2,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button"; // Import Button component
-import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
+import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { employeeSignUp } from "@/api/employee.api";
 
 interface RegisterFormInputs {
   password: string;
@@ -11,15 +13,11 @@ interface RegisterFormInputs {
 }
 
 export default function EmployeeRegister() {
-  // Extracting route params
   const { tenantId, token, email } = useParams<{
     tenantId: string;
     token: string;
     email: string;
   }>();
-
-  const { isSubmitting } = useEmployeeStore();
-  const { employeeSignup } = useEmployeeActions();
 
   const navigate = useNavigate();
 
@@ -30,27 +28,28 @@ export default function EmployeeRegister() {
     watch,
   } = useForm<RegisterFormInputs>();
 
-  const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-    console.log("Form Data:", {
-      tenantId,
-      token,
-      email,
-      password: data.password,
-    });
+  const password = watch("password");
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: employeeSignUp,
+    onSuccess: () => {
+      toast.success("Registration successful!");
+      navigate(`/login`);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Registration failed.");
+    },
+  });
+
+  const onSubmit: SubmitHandler<RegisterFormInputs> = (data) => {
     const newData = {
       tenantId,
       token,
       email,
       password: data.password,
     };
-
-    await employeeSignup(newData, () => {
-      navigate(`/${tenantId}/signin`);
-    });
+    mutate(newData);
   };
-
-  const password = watch("password");
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg shadow-lg">
@@ -104,8 +103,8 @@ export default function EmployeeRegister() {
             </p>
           )}
         </div>
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Loading" : "Register"}
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Loading..." : "Register"}
         </Button>
       </form>
     </div>

@@ -1,20 +1,30 @@
-import { useTenantActions, useTenantStore } from "@/store/useTenantStore";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { AuthLoader } from "@/components/loader";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { getAuthTenant } from "@/api/tenant.api";
+import { useTenantActions } from "@/store/useTenantStore";
 
 export default function TenantGuard() {
-  const { getTenant } = useTenantActions();
-  const { tenant, isFetchingTenant } = useTenantStore();
-
   const navigate = useNavigate();
+  const { setTenant } = useTenantActions();
 
-  useEffect(() => {
-    getTenant(navigate);
-  }, [getTenant, navigate]);
+  const {
+    data: tenant,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["tenant"],
+    queryFn: () => getAuthTenant(navigate, setTenant),
+    retry: false,
+  });
 
-  if (isFetchingTenant || !tenant) {
-    return <div className="mt-2">Loading...</div>;
+  if (isLoading) {
+    return <AuthLoader isLoading={isLoading} />;
   }
 
-  return tenant ? <Outlet /> : <Navigate to="/tenant/login" replace />;
+  if (isError || !tenant) {
+    return <Navigate to="/tenant/login" replace />;
+  }
+
+  return <Outlet />;
 }

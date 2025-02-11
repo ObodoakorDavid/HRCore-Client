@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff icons
+import { resetPassword } from "@/api/employee.api";
+import { toast } from "sonner";
 
 interface ResetPasswordFormInputs {
   newPassword: string;
@@ -13,11 +15,11 @@ interface ResetPasswordFormInputs {
 }
 
 export default function EmployeeResetPassword() {
-  const { isSubmitting } = useEmployeeStore();
-  const { resetPassword } = useEmployeeActions();
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get("token") || "";
 
@@ -28,26 +30,29 @@ export default function EmployeeResetPassword() {
     watch,
   } = useForm<ResetPasswordFormInputs>();
 
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { mutate, isPending } = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      toast.success("Password reset successful");
+      navigate("/login");
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        return toast.error(error.message);
+      }
+      toast.error("Failed to reset password");
+    },
+  });
 
   const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
     if (data.newPassword !== data.confirmPassword) {
       return;
     }
 
-    const resetData = {
+    mutate({
       password: data.newPassword,
-      token: token,
-    };
-
-    try {
-      await resetPassword(resetData, () => {
-        navigate("/login");
-      });
-    } catch (error) {
-      console.error("Error resetting password", error);
-    }
+      token,
+    });
   };
 
   return (
@@ -110,8 +115,8 @@ export default function EmployeeResetPassword() {
           )}
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Resetting..." : "Reset Password"}
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Resetting..." : "Reset Password"}
         </Button>
       </form>
     </div>

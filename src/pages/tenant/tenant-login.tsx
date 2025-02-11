@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button"; // Adjust based on your shadcn setup
-import { Label } from "@radix-ui/react-label";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTenantActions } from "@/store/useTenantStore";
+import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { tenantLogin, validateTenantID } from "@/api/tenant.api";
+import { toast } from "sonner";
+import { useTenantActions } from "@/store/useTenantStore";
 
 type TenantIdFormInputs = {
   tenantId: string;
@@ -17,47 +20,54 @@ type LoginFormInputs = {
 
 export default function TenantLogin() {
   const [isTenantValid, setIsTenantValid] = useState(false);
-
   const navigate = useNavigate();
 
-  const { validateTenant, tenantLogin } = useTenantActions();
+  const { setTenant } = useTenantActions();
 
-  // Tenant ID Form
   const {
     register: registerTenant,
     handleSubmit: handleTenantSubmit,
     formState: { errors: tenantErrors, isSubmitting: isTenantSubmitting },
   } = useForm<TenantIdFormInputs>();
 
-  // Login Form
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
     formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
   } = useForm<LoginFormInputs>();
 
-  const validateTenantId = async (data: TenantIdFormInputs) => {
-    console.log(data.tenantId);
+  const validateTenantMutation = useMutation({
+    mutationFn: (tenantId: string) => validateTenantID({ tenantId }),
+    onSuccess: () => {
+      toast.success(`Client ID validated successfully!`);
+      setIsTenantValid(true);
+    },
+    onError: (error) => {
+      console.error("Tenant validation error:", error);
+      toast.error(error.message);
+    },
+  });
 
-    try {
-      await validateTenant(data.tenantId, () => {
-        setIsTenantValid(true);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginFormInputs) => tenantLogin(data),
+    onSuccess: ({ tenant }) => {
+      console.log(tenant);
+      setTenant(tenant || null);
+      toast.success(`Login successful`);
+      navigate("/dashboard/tenant");
+    },
+    onError: (error) => {
+      console.error("Tenant validation error:", error);
+      toast.error("Somethng went wrong");
+    },
+  });
+
+  const validateTenantId = (data: TenantIdFormInputs) => {
+    validateTenantMutation.mutate(data.tenantId);
   };
 
-  const handleLogin = async (data: LoginFormInputs) => {
-    console.log("Login Data:", data);
-
-    try {
-      await tenantLogin(data, () => {
-        navigate("/dashboard/tenant");
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  const handleLogin = (data: LoginFormInputs) => {
+    loginMutation.mutate(data);
   };
 
   return (

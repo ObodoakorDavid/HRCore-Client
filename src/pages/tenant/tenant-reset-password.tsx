@@ -3,9 +3,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useTenantActions, useTenantStore } from "@/store/useTenantStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react"; // Import Eye and EyeOff icons
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { tenantResetPassword } from "@/api/tenant.api";
 
 interface ResetPasswordFormInputs {
   newPassword: string;
@@ -13,8 +15,6 @@ interface ResetPasswordFormInputs {
 }
 
 export default function TenantResetPassword() {
-  const { isSubmitting } = useTenantStore();
-  const { resetPassword } = useTenantActions();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,6 +31,18 @@ export default function TenantResetPassword() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const mutation = useMutation({
+    mutationFn: tenantResetPassword,
+    onSuccess: () => {
+      toast.success("Password reset link has been ssent to your email");
+      navigate("/tenant/login");
+    },
+    onError: (error) => {
+      console.error("Error resetting password", error);
+      toast.error("Error sedning password reset link");
+    },
+  });
+
   const onSubmit: SubmitHandler<ResetPasswordFormInputs> = async (data) => {
     if (data.newPassword !== data.confirmPassword) {
       return;
@@ -41,13 +53,7 @@ export default function TenantResetPassword() {
       token: token,
     };
 
-    try {
-      await resetPassword(resetData, () => {
-        navigate("/tenant/login");
-      });
-    } catch (error) {
-      console.error("Error resetting password", error);
-    }
+    mutation.mutateAsync(resetData);
   };
 
   return (
@@ -110,8 +116,8 @@ export default function TenantResetPassword() {
           )}
         </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Resetting..." : "Reset Password"}
+        <Button type="submit" disabled={mutation.isPending} className="w-full">
+          {mutation.isPending ? "Resetting..." : "Reset Password"}
         </Button>
       </form>
     </div>

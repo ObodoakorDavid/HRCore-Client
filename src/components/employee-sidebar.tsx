@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
+import { toast } from "sonner";
 
 interface Submenu {
   name: string;
@@ -54,7 +55,7 @@ const routes: Route[] = [
 const adminRoutes: Route[] = [
   {
     name: "All Leaves",
-    path: "/dashboard/employee/leave/all-leaves",
+    path: "/dashboard/employee/all-leaves",
     icon: <FileStack className="w-5 h-5" />,
   },
 ];
@@ -63,7 +64,7 @@ export default function EmployeeSidebar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  const { logout } = useEmployeeActions();
+  const { setAuthEmployee } = useEmployeeActions();
   const { employee } = useEmployeeStore();
 
   const navigate = useNavigate();
@@ -80,10 +81,17 @@ export default function EmployeeSidebar() {
     setProfileDropdownOpen((prev) => !prev);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setAuthEmployee(null);
+    navigate(`/login`);
+    toast.success("Logged out successfully");
+  };
+
   return (
     <aside
       className={cn(
-        "w-54 h-screen bg-white border-r shadow-md flex flex-col justify-between"
+        "w-[200px] max-w-[200px] h-screen bg-white border-r shadow-md flex flex-col justify-between "
       )}
     >
       {/* Logo Section */}
@@ -133,7 +141,7 @@ export default function EmployeeSidebar() {
                           <Link
                             to={submenu.path}
                             className={cn(
-                              "flex items-center space-x-3 p-2 ml-8 hover:bg-gray-100 text-gray-600",
+                              "flex items-center space-x-3 p-2 ml-4 hover:bg-gray-100 text-gray-600",
                               isActive(submenu.path) &&
                                 "bg-gray-200 text-gray-900 border-l-4 border-black"
                             )}
@@ -219,7 +227,7 @@ export default function EmployeeSidebar() {
           variant="ghost"
           size="sm"
           className="w-full flex items-center justify-center space-x-2 text-gray-700 hover:bg-gray-100"
-          onClick={() => logout(navigate)}
+          onClick={() => handleLogout()}
         >
           <LogOut className="w-5 h-5" />
           <span>Logout</span>

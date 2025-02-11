@@ -1,11 +1,14 @@
 import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios.config";
 import { ApplyLeaveFormData } from "@/types/leave.types";
+import { Params } from "@/types/params.types";
 
 //Leave Requests
-export const getAllLeaves = async () => {
+export const getAllLeaves = async (params: Params) => {
   try {
-    const response = await axiosInstance.get("/leave/leave-request");
+    const response = await axiosInstance.get("/leave/leave-request", {
+      params,
+    });
     return response.data?.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -37,9 +40,11 @@ export const getLeaveDetail = async (leaveId: string | undefined) => {
   }
 };
 
-export const getEmployeeLeaves = async () => {
+export const getEmployeeLeaves = async (params: Params) => {
   try {
-    const response = await axiosInstance.get("/leave/leave-request/employee");
+    const response = await axiosInstance.get("/leave/leave-request/employee", {
+      params,
+    });
     return response.data?.data;
   } catch (error) {
     if (error instanceof AxiosError) {
@@ -65,6 +70,7 @@ export const applyForLeave = async (data: ApplyLeaveFormData) => {
   }
 };
 
+//LeaveRequests
 export const fetchManagerLeaveRequest = async () => {
   try {
     const response = await axiosInstance.get("/leave/leave-request/manager");
@@ -113,6 +119,59 @@ export const getEmployeeLeaveBalance = async () => {
     const response = await axiosInstance.get(`/leave/balance`);
     const leaveBalance = response?.data?.data?.leaveBalance;
     return leaveBalance;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch leave balance"
+      );
+    }
+    throw error;
+  }
+};
+
+//LeaveTypes
+export const getLeaveTypes = async (params: Params) => {
+  try {
+    const response = await axiosInstance.get(`/leave/leave-type`, {
+      params,
+    });
+    const data = response?.data?.data;
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch leave types"
+      );
+    }
+    throw error;
+  }
+};
+
+export const addLeaveType = async (payload: any) => {
+  try {
+    const response = await axiosInstance.post(`/leave/leave-type`, payload);
+    const leaveType = response?.data?.data;
+    return leaveType;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to add leave type"
+      );
+    }
+    throw error;
+  }
+};
+
+export const editLeaveType = async (updatedLeaveType: any) => {
+  console.log(updatedLeaveType);
+
+  try {
+    const response = await axiosInstance.put(
+      `/leave/leave-type/${updatedLeaveType._id}`,
+      updatedLeaveType
+    );
+    const leaveType = response?.data?.data?.leaveType;
+    return leaveType;
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(

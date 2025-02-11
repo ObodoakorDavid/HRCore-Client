@@ -1,14 +1,9 @@
 import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios.config";
 import { UpdateEmployee } from "@/types/employee.types";
+import { Params } from "@/types/params.types";
 
-export const getAllEmployees = async (
-  params: {
-    page?: number | string;
-    limit?: number | string;
-    [key: string]: any;
-  } = {}
-) => {
+export const getAllEmployees = async (params: Params) => {
   try {
     const response = await axiosInstance.get(`/employee`, { params });
     const employees = response?.data?.data?.employees;
@@ -60,6 +55,8 @@ export const updateEmployeeProfileAPI = async (
   data: Partial<UpdateEmployee>
 ) => {
   try {
+    console.log(data);
+
     const response = await axiosInstance.put(`/employee/auth`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -99,26 +96,6 @@ export const acceptInvite = async (payload: {
   }
 };
 
-// Admins
-// export const makeEmployeeAdminApi = async (
-//   employeeId: string,
-//   payload: { isAdmin: boolean }
-// ) => {
-//   try {
-//     const response = await axiosInstance.put(
-//       `/employee/${employeeId}/admin`,
-//       payload
-//     );
-
-//     return response.data;
-//   } catch (error) {
-//     if (error instanceof AxiosError) {
-//       throw new Error(error.response?.data?.message || "Something went wrong");
-//     }
-//     throw error;
-//   }
-// };
-
 export const updateEmployeeDetails = async (payload: any) => {
   console.log(payload);
 
@@ -132,6 +109,117 @@ export const updateEmployeeDetails = async (payload: any) => {
     if (error instanceof AxiosError) {
       throw new Error(
         error.response?.data?.message || "Failed to update employee"
+      );
+    }
+    throw error;
+  }
+};
+
+// Auth Actions
+export const employeeSignUp = async (payload: {
+  email: string | undefined;
+  password: string | undefined;
+  tenantId: string | undefined;
+  token: string | undefined;
+}) => {
+  try {
+    const response = await axiosInstance.post(`/employee/auth/signin`, payload);
+
+    const token = response?.data?.data?.token;
+    const tenantId = response?.data?.data?.employee?.tenantId;
+    // const employee = response?.data?.data?.employee;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("tenant-id", tenantId);
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "Failed to log in");
+    }
+    throw error;
+  }
+};
+
+export const employeeSignIn = async (payload: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const response = await axiosInstance.post(`/employee/auth/signin`, payload);
+
+    const token = response?.data?.data?.token;
+    const tenantId = response?.data?.data?.employee?.tenantId;
+    // const employee = response?.data?.data?.employee;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("tenant-id", tenantId);
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message || "Failed to log in");
+    }
+    throw error;
+  }
+};
+
+// export const employeeSignOut = async () => {
+//   try {
+//     const response = await axiosInstance.post(`/employee/auth/signin`);
+
+//     const token = response?.data?.data?.token;
+//     const tenantId = response?.data?.data?.employee?.tenantId;
+//     // const employee = response?.data?.data?.employee;
+
+//     localStorage.setItem("token", token);
+//     localStorage.setItem("tenant-id", tenantId);
+
+//     return response.data;
+//   } catch (error) {
+//     if (error instanceof AxiosError) {
+//       throw new Error(error.response?.data?.message || "Failed to log in");
+//     }
+//     throw error;
+//   }
+// };
+
+export const forgotPasswordRequest = async (payload: { email: string }) => {
+  console.log(payload);
+
+  try {
+    const response = await axiosInstance.post(
+      `/employee/auth/forgot-password`,
+      payload
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to send to send request"
+      );
+    }
+    throw error;
+  }
+};
+
+export const resetPassword = async (payload: {
+  token: string;
+  password: string;
+}) => {
+  console.log(payload);
+
+  try {
+    const response = await axiosInstance.post(
+      `/employee/auth/reset-password`,
+      payload
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to reset password"
       );
     }
     throw error;

@@ -2,27 +2,34 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
+import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { forgotPasswordRequest } from "@/api/employee.api";
 
 interface ForgotPasswordFormInputs {
   email: string;
 }
 
 export default function EmployeeForgotPassword() {
-  const { isSubmitting } = useEmployeeStore();
-  const { forgotPassword } = useEmployeeActions();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordFormInputs>();
 
-  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
-    await forgotPassword(data.email, () => {
-      // navigate("/login"); // Navigate to the login page after the reset request
-    });
+  const { mutate, isPending } = useMutation({
+    mutationFn: forgotPasswordRequest,
+    onSuccess: () => {
+      toast.success("Password reset link sent successfully!");
+    },
+    onError: () => {
+      toast.error("Failed to send password reset link.");
+    },
+  });
+
+  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = (data) => {
+    mutate(data);
   };
 
   return (
@@ -49,8 +56,8 @@ export default function EmployeeForgotPassword() {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Requesting..." : "Request Password Reset"}
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Requesting..." : "Request Password Reset"}
           </Button>
           <div className="py-4 text-center">
             <Link to="/login" className="font-semibold underline">

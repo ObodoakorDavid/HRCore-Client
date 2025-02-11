@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
-import { formatDate1 } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { Leave } from "@/types/leave.types";
 import { useState } from "react";
 
@@ -72,8 +72,8 @@ export default function LeaveRequestActionModal({
             </p>
             <p className="text-sm font-semibold">
               <span className="font-medium">Time Frame:</span>{" "}
-              {formatDate1(leaveRequest?.startDate || "")} -{" "}
-              {formatDate1(leaveRequest?.resumptionDate || "")}
+              {formatDate(leaveRequest?.startDate || "")} -{" "}
+              {formatDate(leaveRequest?.resumptionDate || "")}
             </p>
           </div>
 

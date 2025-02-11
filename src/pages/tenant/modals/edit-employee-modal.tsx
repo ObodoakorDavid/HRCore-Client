@@ -4,17 +4,13 @@ import { Modal } from "@/components/modal";
 import { Input } from "@/components/ui/input";
 import { SearchableDropdown } from "@/components/searchable-dropdown";
 import { handleFetchLevels } from "@/lib/utils";
+import { updateEmployeeDetailsByTenant } from "@/api/tenant.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    _id: string;
-    name: string;
-    email: string;
-    jobRole: string;
-    levelId: string;
-  }) => Promise<void>;
   employee: {
     _id: string;
     name: string;
@@ -26,7 +22,6 @@ interface EditEmployeeModalProps {
       name: string;
     };
   };
-  isSubmitting: boolean;
 }
 
 interface FormValues {
@@ -41,10 +36,10 @@ interface FormValues {
 export default function EditEmployeeModal({
   isOpen,
   onClose,
-  onSubmit,
   employee,
-  isSubmitting,
 }: EditEmployeeModalProps) {
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -62,8 +57,21 @@ export default function EditEmployeeModal({
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: (data: any) => updateEmployeeDetailsByTenant(data),
+    onSuccess: () => {
+      toast.success("Employee updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["getAllEmployees"] });
+      onClose();
+    },
+    onError: (error: Error) => {
+      toast.success("Something went wrong");
+      console.error("Failed to update employee:", error);
+    },
+  });
+
   const handleFormSubmit = async (data: FormValues) => {
-    await onSubmit(data);
+    await editMutation.mutateAsync(data);
   };
 
   return (
@@ -139,8 +147,8 @@ export default function EditEmployeeModal({
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button type="submit" disabled={editMutation.isPending}>
+            {editMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </form>

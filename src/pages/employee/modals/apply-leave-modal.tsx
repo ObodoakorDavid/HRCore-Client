@@ -18,12 +18,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { applyForLeave } from "@/api/leave.api";
+import { toast } from "sonner";
 
 interface ApplyLeaveModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ApplyLeaveFormData) => Promise<void>;
-  isSubmitting: boolean;
 }
 
 interface ApplyLeaveFormData {
@@ -37,8 +38,6 @@ interface ApplyLeaveFormData {
 export default function ApplyLeaveModal({
   isOpen,
   onClose,
-  onSubmit,
-  isSubmitting,
 }: ApplyLeaveModalProps) {
   const {
     register,
@@ -59,6 +58,8 @@ export default function ApplyLeaveModal({
   const [startDate, setStartDate] = useState<Date | string>(new Date());
   const [resumptionDate, setResumptionDate] = useState<Date | string>("");
 
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     if (duration) {
       const newDate = calculateResumptionDate(startDate, duration);
@@ -76,6 +77,20 @@ export default function ApplyLeaveModal({
     return resumptionDate;
   }
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: applyForLeave,
+    onSuccess: () => {
+      toast.success("Leave appllied");
+      onClose();
+      reset();
+      queryClient.invalidateQueries({ queryKey: ["employee-leaves"] });
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.message || "Failed to apply");
+    },
+  });
+
   const handleFormSubmit = async (data: ApplyLeaveFormData) => {
     const { startDate, resumptionDate } = data;
     const start = new Date(startDate);
@@ -86,8 +101,7 @@ export default function ApplyLeaveModal({
       startDate: start.toISOString().split("T")[0].toString(),
       resumptionDate: end.toISOString().split("T")[0].toString(),
     };
-    await onSubmit(updatedData);
-    reset();
+    mutate(updatedData);
   };
 
   return (
@@ -243,7 +257,7 @@ export default function ApplyLeaveModal({
             <Textarea
               placeholder="Enter the reason for leave"
               {...register("reason", { required: "Reason is required" })}
-              disabled={isSubmitting}
+              disabled={isPending}
             />
             {errors.reason && (
               <p className="text-sm text-red-500 mt-1">
@@ -256,12 +270,12 @@ export default function ApplyLeaveModal({
               type="button"
               variant="outline"
               onClick={onClose}
-              disabled={isSubmitting}
+              disabled={isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit"}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Submitting..." : "Submit"}
             </Button>
           </div>
         </form>

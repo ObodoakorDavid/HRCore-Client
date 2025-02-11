@@ -7,18 +7,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return dateString;
-  }
-};
-
-export function formatDate1(dateString: string) {
+export function formatDate(dateString: string) {
   // Helper function to get the ordinal suffix
   function getOrdinalSuffix(day: number) {
     if (day > 3 && day < 21) return "th";

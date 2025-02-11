@@ -9,24 +9,22 @@ import { useMutation } from "@tanstack/react-query";
 import { handleFetchEmployees } from "@/lib/utils";
 import { updateEmployeeProfileAPI } from "@/api/employee.api";
 import { toast } from "sonner";
-import { useEmployeeStore } from "@/store/useEmployeeStore";
+import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
+import { Employee } from "@/types/employee.types";
 
 export interface formInputs {
-  name: string;
+  name: string | null;
   email: string;
-  lineManager: string;
-  reliever: string;
+  lineManager: string | null;
+  reliever: string | null;
   file: FileList | null;
   avatar: FileList | null;
 }
 
 export default function EmployeeProfileUpdate() {
   const { employee } = useEmployeeStore();
-
-  console.log(employee);
-
+  const { setAuthEmployee } = useEmployeeActions();
   const navigate = useNavigate();
-  // const queryClient = useQueryClient();
 
   const {
     register,
@@ -36,10 +34,10 @@ export default function EmployeeProfileUpdate() {
     clearErrors,
   } = useForm<formInputs>({
     defaultValues: {
-      name: employee?.name || "",
+      name: employee?.name || null,
       email: employee?.email,
-      lineManager: employee?.lineManager?._id || "",
-      reliever: employee?.reliever?._id || "",
+      lineManager: employee?.lineManager?._id || null,
+      reliever: employee?.reliever?._id || null,
       avatar: null,
       file: null,
     },
@@ -47,8 +45,10 @@ export default function EmployeeProfileUpdate() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateEmployeeProfileAPI,
-    onSuccess: () => {
-      // queryClient.invalidateQueries(["employees"]);
+    onSuccess: (employee: Employee) => {
+      console.log(employee);
+
+      setAuthEmployee(employee);
       navigate("/dashboard/employee/profile");
     },
     onError: (error) => {
@@ -60,8 +60,6 @@ export default function EmployeeProfileUpdate() {
   });
 
   const onSubmit = (data: formInputs) => {
-    console.log(data);
-
     const file = data.file?.[0];
     const avatar = data.avatar?.[0];
 
@@ -140,7 +138,7 @@ export default function EmployeeProfileUpdate() {
           )}
         </div>
 
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <FileUpload
             label="Upload File"
             register={{ ...register("file") }}
@@ -148,7 +146,7 @@ export default function EmployeeProfileUpdate() {
             accept=".jpg,.png,.pdf"
             maxSize={10 * 1024 * 1024}
           />
-        </div>
+        </div> */}
 
         <div className="mb-4">
           <FileUpload

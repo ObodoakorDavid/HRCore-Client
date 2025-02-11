@@ -5,24 +5,7 @@ export interface LeaveState {
   isFetching: boolean;
   isSubmitting: boolean;
   actions: {
-    addLeaveType: (
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getLeaveTypes: (params?: Record<string, any>) => Promise<void>;
-    editLeaveType: (
-      leaveTypeId: string,
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    //Leave blance
     getLeaveBalance: () => Promise<void>;
-
-    //Leave Requests
-    applyForLeave: (
-      data: Record<string, any>,
-      onSuccess?: () => void
-    ) => Promise<void>;
   };
 }
 
@@ -43,9 +26,11 @@ export interface ApplyLeaveFormData {
 export interface Leave {
   _id: string;
   employee: {
+    _id: string;
     name: string;
   };
   lineManager: {
+    _id: string;
     name: string;
   };
   leaveType: {

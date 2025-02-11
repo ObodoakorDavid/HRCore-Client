@@ -1,5 +1,5 @@
-
 import { acceptInvite } from "@/api/employee.api";
+import { Loader } from "@/components/loader";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -15,12 +15,7 @@ export default function AcceptInvite() {
   const isTenantIdValid =
     typeof tenantId === "string" && tenantId.trim() !== "";
 
-  const {
-    isPending, // Loading state
-    isError, // Error state
-    error, // Error object
-    data, // Success data
-  } = useQuery({
+  const { isPending, isError, error, data } = useQuery({
     queryKey: ["acceptInvite", tenantId, token], // Unique key for the query
     queryFn: () => {
       if (!token) {
@@ -53,7 +48,8 @@ export default function AcceptInvite() {
 
   if (isPending) {
     return (
-      <div className="bg-gray-100 min-h-screen">
+      <div className="bg-gray-100 min-h-screen flex flex-col justify-center">
+        <Loader isLoading={isPending} />
         <p className="py-4 font-semibold">One moment, accepting invite...</p>
       </div>
     );
@@ -62,7 +58,7 @@ export default function AcceptInvite() {
   if (isError) {
     return (
       <div className="bg-gray-100 min-h-screen">
-        <p className="py-4 font-semibold">{error.message} FFF</p>
+        <p className="py-4 font-semibold">{error.message}</p>
       </div>
     );
   }

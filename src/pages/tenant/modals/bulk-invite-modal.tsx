@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { bulkInvite } from "@/api/tenant.api";
 
 interface BulkInviteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (file: File) => Promise<void>;
-  isSubmitting: boolean;
 }
 
 type FormValues = {
@@ -18,29 +18,47 @@ type FormValues = {
 export default function BulkInviteModal({
   isOpen,
   onClose,
-  onSubmit,
-  isSubmitting,
 }: BulkInviteModalProps) {
   const [isDragActive, setIsDragActive] = useState(false);
+  const queryClient = useQueryClient();
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<FormValues>();
 
   const selectedFile = watch("file")?.[0];
 
-  const onSubmitForm = async (data: FormValues) => {
-    console.log("fff");
+  // const onSubmitForm = async (data: FormValues) => {
+  //   console.log("fff");
 
-    try {
-      await onSubmit(data.file[0]);
-      // onClose();
-    } catch (error) {
-      toast.error("Failed to upload the bulk invite. Please try again.");
-    }
+  //   try {
+  //     await onSubmit(data.file[0]);
+  //     // onClose();
+  //   } catch (error) {
+  //     toast.error("Failed to upload the bulk invite. Please try again.");
+  //   }
+  // };
+
+  const bulkInviteMutation = useMutation({
+    mutationFn: (data: any) => bulkInvite(data),
+    onSuccess: () => {
+      reset();
+      queryClient.invalidateQueries({ queryKey: ["invites"] });
+      onClose();
+      toast.success("Bulk invite sent successfully!");
+    },
+    onError: (error: Error) => {
+      toast.success("Something went wrong");
+      console.error("Failed to", error);
+    },
+  });
+
+  const onSubmitForm = async (data: FormValues) => {
+    await bulkInviteMutation.mutateAsync({ file: data.file[0] });
   };
 
   return (
@@ -107,8 +125,11 @@ export default function BulkInviteModal({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!selectedFile || isSubmitting}>
-              {isSubmitting ? "Uploading..." : "Upload"}
+            <Button
+              type="submit"
+              disabled={!selectedFile || bulkInviteMutation.isPending}
+            >
+              {bulkInviteMutation.isPending ? "Uploading..." : "Upload"}
             </Button>
           </div>
         </div>
