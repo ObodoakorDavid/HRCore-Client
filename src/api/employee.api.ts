@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios.config";
 import { UpdateEmployee } from "@/types/employee.types";
 import { Params } from "@/types/params.types";
+import { NavigateFunction } from "react-router-dom";
 
 export const getAllEmployees = async (params: Params) => {
   try {
@@ -36,17 +37,17 @@ export const getEmployeeDetails = async (employeeId: string | undefined) => {
   }
 };
 
-export const getLoggedInEmployee = async () => {
+export const getLoggedInEmployee = async (
+  navigate: NavigateFunction,
+  updateEmployee: (employee: any) => void
+) => {
   try {
     const response = await axiosInstance.get(`/employee/auth`);
     const employee = response?.data?.data?.employee;
+    updateEmployee(employee);
     return employee;
   } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch employee"
-      );
-    }
+    navigate("/login");
     throw error;
   }
 };

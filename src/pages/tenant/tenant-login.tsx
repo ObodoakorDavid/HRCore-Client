@@ -27,13 +27,13 @@ export default function TenantLogin() {
   const {
     register: registerTenant,
     handleSubmit: handleTenantSubmit,
-    formState: { errors: tenantErrors, isSubmitting: isTenantSubmitting },
+    formState: { errors: tenantErrors },
   } = useForm<TenantIdFormInputs>();
 
   const {
     register: registerLogin,
     handleSubmit: handleLoginSubmit,
-    formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
+    formState: { errors: loginErrors },
   } = useForm<LoginFormInputs>();
 
   const validateTenantMutation = useMutation({
@@ -100,10 +100,12 @@ export default function TenantLogin() {
         </div>
         <Button
           type="submit"
-          disabled={isTenantSubmitting || isTenantValid}
+          disabled={validateTenantMutation.isPending || isTenantValid}
           className="w-full"
         >
-          {isTenantSubmitting ? "Validating..." : "Validate Client ID"}
+          {validateTenantMutation.isPending
+            ? "Validating..."
+            : "Validate Client ID"}
         </Button>
       </form>
 
@@ -159,8 +161,12 @@ export default function TenantLogin() {
               </p>
             )}
           </div>
-          <Button type="submit" disabled={isLoginSubmitting} className="w-full">
-            {isLoginSubmitting ? "Logging in..." : "Login"}
+          <Button
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="w-full"
+          >
+            {loginMutation.isPending ? "Logging in..." : "Login"}
           </Button>
         </form>
       )}

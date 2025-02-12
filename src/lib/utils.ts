@@ -98,6 +98,8 @@ export function getStatusClasses(status: string | undefined | null) {
   switch (status.toLowerCase()) {
     case "approved":
       return "bg-green-100 text-green-800";
+    case "accepted":
+      return "bg-green-100 text-green-800";
     case "pending":
       return "bg-yellow-100 text-yellow-800";
     case "rejected":

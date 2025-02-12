@@ -1,23 +1,33 @@
-import { Loader } from "@/components/loader";
+import { getLoggedInEmployee } from "@/api/employee.api";
+import { AuthLoader } from "@/components/loader";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 
 export default function EmployeeGuard() {
-  const { getEmployee } = useEmployeeActions();
-  const { employee, isFetchingEmployee } = useEmployeeStore();
-
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getEmployee(navigate);
-  }, [getEmployee, navigate]);
+  const { setAuthEmployee } = useEmployeeActions();
 
-  if (isFetchingEmployee || !employee) {
-    return <Loader isLoading={isFetchingEmployee} />;
+  const {
+    data: employee,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["employee"],
+    queryFn: () => getLoggedInEmployee(navigate, setAuthEmployee),
+    retry: false,
+  });
+
+  if (isLoading) {
+    return <AuthLoader isLoading={isLoading} />;
   }
 
-  return employee ? <Outlet /> : <Navigate to="/login" replace />;
+  if (isError || !employee) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 }
 
 export function IsEmployeeAdmin() {
