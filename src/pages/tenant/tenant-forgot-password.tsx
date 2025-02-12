@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function TenantForgotPassword() {
     },
   });
 
-  const onSubmit: SubmitHandler<ForgotPasswordFormInputs> = async (data) => {
+  const onSubmit = async (data: { email: string }) => {
     await passwordResetMutation.mutateAsync(data);
   };
 

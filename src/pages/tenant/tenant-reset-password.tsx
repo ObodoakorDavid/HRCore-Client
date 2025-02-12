@@ -39,7 +39,7 @@ export default function TenantResetPassword() {
     },
     onError: (error) => {
       console.error("Error resetting password", error);
-      toast.error("Error sedning password reset link");
+      toast.error("Error sending password reset link");
     },
   });
 

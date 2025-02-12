@@ -119,9 +119,10 @@ export const tenantSendPasswordResetLink = async (payload: {
   console.log(payload);
 
   try {
-    const response = await axiosInstance.post(`/tenant/auth/forgot-password`, {
-      payload,
-    });
+    const response = await axiosInstance.post(
+      `/tenant/auth/forgot-password`,
+      payload
+    );
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
