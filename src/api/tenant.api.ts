@@ -4,9 +4,11 @@ import { AxiosError } from "axios";
 import { NavigateFunction } from "react-router-dom";
 
 export const updateEmployeeDetailsByTenant = async (payload: any) => {
+  console.log(payload);
+
   try {
     const response = await axiosInstance.put(
-      `/tenant/employee/${payload.employeeId}`,
+      `/tenant/employee/${payload._id}`,
       payload
     );
     return response.data;

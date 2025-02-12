@@ -64,7 +64,7 @@ export default function Employee() {
   // Mutation for updating employee details
   const { mutateAsync: updateEmployee, isPending: isUpdatingEmployee } =
     useMutation({
-      mutationFn: (data: any) => updateEmployeeDetailsByTenant(data),
+      mutationFn: updateEmployeeDetailsByTenant,
       onSuccess: () => {
         toast.success("Employee updated successfully");
         queryClient.invalidateQueries({ queryKey: ["getAllEmployees"] });
@@ -108,7 +108,7 @@ export default function Employee() {
           <Button
             onClick={() => {
               updateEmployee({
-                employeeId: row?._id,
+                _id: row?._id,
                 isAdmin: !row?.isAdmin,
               });
             }}

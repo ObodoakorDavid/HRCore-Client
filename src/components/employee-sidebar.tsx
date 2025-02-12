@@ -206,7 +206,9 @@ export default function EmployeeSidebar() {
           onClick={toggleProfileDropdown}
         >
           <div>
-            <p className="text-sm text-gray-500">{employee?.name}</p>
+            <p className="text-sm text-gray-500">
+              {employee?.name || employee?.email}
+            </p>
           </div>
         </div>
 

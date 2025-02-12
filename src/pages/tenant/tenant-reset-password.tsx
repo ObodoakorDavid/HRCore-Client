@@ -34,7 +34,7 @@ export default function TenantResetPassword() {
   const mutation = useMutation({
     mutationFn: tenantResetPassword,
     onSuccess: () => {
-      toast.success("Password reset link has been ssent to your email");
+      toast.success("Password reset successful! You can noq log in");
       navigate("/tenant/login");
     },
     onError: (error) => {
