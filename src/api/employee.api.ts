@@ -24,9 +24,10 @@ export const getAllEmployees = async (params: Params) => {
 
 export const getEmployeeDetails = async (employeeId: string | undefined) => {
   try {
-    const response = await axiosInstance.get(`/employee/profile/${employeeId}`);
+    const response = await axiosInstance.get(`/tenant/employee/${employeeId}`);
     const employee = response?.data?.data?.employee;
-    return employee;
+    const leaveBalances = response?.data?.data?.leaveBalances;
+    return { employee, leaveBalances };
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(
@@ -43,8 +44,12 @@ export const getLoggedInEmployee = async (
 ) => {
   try {
     const response = await axiosInstance.get(`/employee/auth`);
+    // const employee = response?.data?.data?.employee;
+    // updateEmployee(employee);
+
     const employee = response?.data?.data?.employee;
-    updateEmployee(employee);
+    const leaveBalances = response?.data?.data?.leaveBalances;
+    updateEmployee({ ...employee, leaveBalances });
     return employee;
   } catch (error) {
     navigate("/login");

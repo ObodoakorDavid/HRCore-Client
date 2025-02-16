@@ -9,29 +9,18 @@ export default function LandingPage() {
       <nav className="bg-black text-white py-4">
         <div className="container mx-auto px-6 flex items-center justify-between">
           <h1 className="text-xl font-bold">HRCore</h1>
-          <ul className="flex space-x-6">
-            <li>
-              <a href="#features" className="hover:underline">
-                Features
-              </a>
-            </li>
-            <li>
-              <a href="#testimonials" className="hover:underline">
-                Testimonials
-              </a>
-            </li>
-            <li>
-              <a href="#signup" className="hover:underline">
-                Sign Up
-              </a>
-            </li>
-          </ul>
           <div className="flex gap-2">
             <Link
               to="/login"
-              className="bg-white text-black font-semibold px-4 py-2 rounded-lg"
+              // className="bg-white text-black font-semibold px-4 py-2 rounded-lg"
             >
-              Login
+              <Button variant={"ghost"}>Login</Button>
+            </Link>
+            <Link
+              to="/tenant/login"
+              // className="bg-white text-black font-semibold px-4 py-2 rounded-lg"
+            >
+              <Button variant={"ghost"}>Client Login</Button>
             </Link>
           </div>
         </div>
@@ -47,7 +36,7 @@ export default function LandingPage() {
             Empower tenants and employees with a streamlined leave management
             solution.
           </p>
-          <Button className="bg-white text-black font-semibold px-6 py-3 rounded-lg shadow-lg">
+          <Button variant={"secondary"} className="text-black">
             Get Started
           </Button>
         </div>

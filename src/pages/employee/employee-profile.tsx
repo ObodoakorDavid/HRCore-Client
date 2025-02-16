@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { getEmployeeLeaveBalance } from "@/api/leave.api";
+import { useMutation } from "@tanstack/react-query";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { cn } from "@/lib/utils";
 import { updateEmployeeProfileAPI } from "@/api/employee.api";
@@ -12,10 +11,12 @@ export default function EmployeeProfile() {
   const { employee } = useEmployeeStore();
   const { getEmployeeDetails } = useEmployeeActions();
 
-  const { data: leaveBalance } = useQuery({
-    queryKey: ["leaveBalance"],
-    queryFn: getEmployeeLeaveBalance,
-  });
+  // const { data: leaveBalance } = useQuery({
+  //   queryKey: ["leaveBalance"],
+  //   queryFn: getEmployeeLeaveBalance,
+  // });
+
+  // console.log(leaveBalance);
 
   const handleDownload = (url: string) => {
     const link = document.createElement("a");
@@ -23,6 +24,8 @@ export default function EmployeeProfile() {
     link.download = url;
     link.click();
   };
+
+  console.log(employee);
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateEmployeeProfileAPI,
@@ -124,8 +127,8 @@ export default function EmployeeProfile() {
         <div className="mt-6">
           <h2 className="text-xl font-semibold mb-4">Leave Balances</h2>
           <ul>
-            {leaveBalance && leaveBalance.length > 0 ? (
-              leaveBalance.map((balance: any, index: number) => (
+            {employee?.leaveBalances && employee?.leaveBalances.length > 0 ? (
+              employee?.leaveBalances.map((balance: any, index: number) => (
                 <li key={index} className="mb-4">
                   <div className="flex justify-between">
                     <span className="font-semibold capitalize text-gray-600">

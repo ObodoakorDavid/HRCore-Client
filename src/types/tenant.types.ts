@@ -1,3 +1,17 @@
+export interface Tenant {
+  _id: string;
+  name: string;
+  email: string;
+  logo: string;
+}
+
+export interface UpdateTenant {
+  name: string | null;
+  email: string;
+  logo: File | null;
+  color: string;
+}
+
 export interface TenantState {
   tenant: any | null;
   isFetchingTenant: boolean;

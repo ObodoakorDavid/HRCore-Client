@@ -1,4 +1,5 @@
 import { getAllLeaves } from "@/api/leave.api";
+import LeaveRequestsChart from "@/components/charts/leave-request-chart";
 import DataTable from "@/components/table";
 import { formatDate, getStatusClasses } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -70,6 +71,7 @@ export default function AllLeaves() {
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-lg font-semibold">Leave History</h1>
       </div>
+      <LeaveRequestsChart />
       <DataTable
         columns={columns}
         data={data?.leaveRequests || []}

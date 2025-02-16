@@ -1,4 +1,5 @@
 import { NavigateFunction } from "react-router-dom";
+import { EmployeeLeaveBalance } from "./leave.types";
 
 export interface Employee {
   _id: string;
@@ -25,6 +26,7 @@ export interface Employee {
       fileType: string;
     }
   ];
+  leaveBalances: EmployeeLeaveBalance[];
 }
 
 export interface UpdateEmployee {

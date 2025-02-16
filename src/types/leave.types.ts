@@ -44,3 +44,15 @@ export interface Leave {
   reason: string;
   rejectionReason: string;
 }
+
+export interface EmployeeLeaveBalance {
+  leaveTypeId: string;
+  balance: {
+    leaveTypeDetails: {
+      _id: string;
+      name: string;
+      defaultBalance: number;
+    };
+    balance: number;
+  };
+}

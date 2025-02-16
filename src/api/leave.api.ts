@@ -3,7 +3,7 @@ import axiosInstance from "../lib/axios.config";
 import { ApplyLeaveFormData } from "@/types/leave.types";
 import { Params } from "@/types/params.types";
 
-//Leave Requests
+// Leave Requests
 export const getAllLeaves = async (params: Params) => {
   try {
     const response = await axiosInstance.get("/leave/leave-request", {
@@ -70,7 +70,6 @@ export const applyForLeave = async (data: ApplyLeaveFormData) => {
   }
 };
 
-//LeaveRequests
 export const fetchManagerLeaveRequest = async () => {
   try {
     const response = await axiosInstance.get("/leave/leave-request/manager");
@@ -107,22 +106,6 @@ export const updateLeaveRequest = async ({
     if (error instanceof AxiosError) {
       throw new Error(
         error.response?.data?.message || "Failed to update leave"
-      );
-    }
-    throw error;
-  }
-};
-
-// Leave Balance
-export const getEmployeeLeaveBalance = async () => {
-  try {
-    const response = await axiosInstance.get(`/leave/balance`);
-    const leaveBalance = response?.data?.data?.leaveBalance;
-    return leaveBalance;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch leave balance"
       );
     }
     throw error;
@@ -176,6 +159,27 @@ export const editLeaveType = async (updatedLeaveType: any) => {
     if (error instanceof AxiosError) {
       throw new Error(
         error.response?.data?.message || "Failed to fetch leave balance"
+      );
+    }
+    throw error;
+  }
+};
+
+// Analytics
+export const getLeaveRequestAnalytics = async (params: { year?: string }) => {
+  try {
+    const response = await axiosInstance.get(`/analytics/leave-requests`, {
+      params,
+    });
+    const data = response?.data?.data;
+    const analytics = response?.data?.data?.analytics;
+    return analytics;
+    return data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message ||
+          "Failed to fetch analytics for leave requests"
       );
     }
     throw error;

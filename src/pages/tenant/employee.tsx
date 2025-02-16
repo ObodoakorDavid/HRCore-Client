@@ -40,26 +40,10 @@ export default function Employee() {
     queryFn: () => getAllEmployees({ page, limit: 10, search }),
   });
 
-  // const handleCheckboxChange = (employeeId: string) => {
-  //   setSelectedEmployees((prevSelected) =>
-  //     prevSelected.includes(employeeId)
-  //       ? prevSelected.filter((id) => id !== employeeId)
-  //       : [...prevSelected, employeeId]
-  //   );
-  // };
-
   const handleEditClick = (employee: Employee) => {
     setEmployeeToEdit(employee);
     setIsEditModalOpen(true); // Open modal when edit button is clicked
   };
-
-  // const handleSelectAll = (e: ChangeEvent<HTMLInputElement>) => {
-  //   if (e.target.checked && data?.employees) {
-  //     setSelectedEmployees(data.employees.map((employee) => employee._id));
-  //   } else {
-  //     setSelectedEmployees([]);
-  //   }
-  // };
 
   // Mutation for updating employee details
   const { mutateAsync: updateEmployee, isPending: isUpdatingEmployee } =

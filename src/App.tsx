@@ -35,6 +35,7 @@ import EmployeeLeaveRequests from "./pages/employee/employee-leave-requests";
 import AllLeaves from "./pages/employee/employee-admin/all-leaves";
 import EmployeeDetail from "./pages/employee/employee-detail";
 import EmployeeLeaveDetail from "./pages/employee/employee-leave-detail";
+import TenantProfileUpdate from "./pages/tenant/tenant-profile-update";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,10 @@ function App() {
             {
               path: "profile",
               element: <TenantProfile />,
+            },
+            {
+              path: "profile/update",
+              element: <TenantProfileUpdate />,
             },
             {
               path: "employee",

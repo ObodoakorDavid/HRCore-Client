@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axios.config";
 import { Params } from "@/types/params.types";
+import { UpdateTenant } from "@/types/tenant.types";
 import { AxiosError } from "axios";
 import { NavigateFunction } from "react-router-dom";
 
@@ -95,6 +96,22 @@ export const tenantLogin = async (payload: any) => {
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(error.response?.data?.message || "Client ID Incorrect");
+    }
+    throw error;
+  }
+};
+
+export const updateTenantProfile = async (payload: UpdateTenant) => {
+  console.log(payload);
+
+  try {
+    const response = await axiosInstance.put(`/tenant/auth`, payload);
+    return response.data?.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to update tenant profile"
+      );
     }
     throw error;
   }
