@@ -57,8 +57,8 @@ export default function TenantLogin() {
       navigate("/dashboard/tenant");
     },
     onError: (error) => {
-      console.error("Tenant validation error:", error);
-      toast.error("Somethng went wrong");
+      console.error("Tenant login error:", error);
+      toast.error(error.message);
     },
   });
 
