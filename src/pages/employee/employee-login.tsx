@@ -31,8 +31,8 @@ export default function EmployeeLogin() {
       toast.success("Login successful!");
       navigate("/dashboard/employee");
     },
-    onError: () => {
-      toast.error("Login failed. Please check your credentials.");
+    onError: (error) => {
+      toast.error(error.message || "Login failed.");
     },
   });
 

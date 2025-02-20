@@ -1,4 +1,3 @@
-import { NavigateFunction } from "react-router-dom";
 import { EmployeeLeaveBalance } from "./leave.types";
 
 export interface Employee {
@@ -12,6 +11,7 @@ export interface Employee {
   tenantId: {
     name: string;
     logo: string;
+    color: string;
   };
   lineManager: Employee;
   reliever: Employee;
@@ -41,16 +41,9 @@ export interface UpdateEmployee {
 
 export interface EmployeeState {
   employee: Employee | null;
-  isFetchingEmployee: boolean;
-  isSubmitting: boolean;
-  stats: any;
   actions: {
     setAuthEmployee: (employee: Employee | null) => Promise<void>;
-    getEmployee: (
-      navigate: NavigateFunction,
-      onSuccess?: () => void
-    ) => Promise<void>;
-    getEmployeeDetails: (onSuccess?: () => void) => Promise<void>;
+    getAuthEmployee: () => Promise<void>;
   };
 }
 

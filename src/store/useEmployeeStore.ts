@@ -1,11 +1,10 @@
 import { create } from "zustand";
-import axiosInstance from "@/lib/axios.config";
-import { NavigateFunction } from "react-router-dom";
 import {
   Employee,
   EmployeeSetFunction,
   EmployeeState,
 } from "@/types/employee.types";
+import { getLoggedInEmployee } from "@/api/employee.api";
 
 const actions = (set: EmployeeSetFunction) => ({
   setAuthEmployee: async (employee: Employee | null) => {
@@ -14,47 +13,15 @@ const actions = (set: EmployeeSetFunction) => ({
       employee,
     }));
   },
-  getEmployee: async (navigate: NavigateFunction, onSuccess?: () => void) => {
-    set({ isFetchingEmployee: true });
+  getAuthEmployee: async () => {
     try {
-      const response = await axiosInstance.get(`/employee/auth`);
-      const employee = response?.data?.data?.employee;
-      const stats = response?.data?.data?.stats;
-
+      const { employee, leaveBalances } = await getLoggedInEmployee(
+        actions(set).setAuthEmployee
+      );
       set((state: EmployeeState) => ({
         ...state,
-        employee,
-        stats,
-        isFetchingEmployee: false,
+        employee: { ...employee, leaveBalances },
       }));
-
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error: unknown) {
-      console.log(error);
-      set({ employee: null, isFetchingEmployee: false });
-      navigate(`/login`);
-    } finally {
-      set({ isFetchingEmployee: false });
-    }
-  },
-  getEmployeeDetails: async (onSuccess?: () => void) => {
-    try {
-      const response = await axiosInstance.get(`/employee/auth`);
-      const employee = response?.data?.data?.employee;
-      const stats = response?.data?.data?.stats;
-
-      set((state: EmployeeState) => ({
-        ...state,
-        employee,
-        stats,
-        isFetchingEmployee: false,
-      }));
-
-      if (onSuccess) {
-        onSuccess();
-      }
     } catch (error: unknown) {
       console.log(error);
     }
@@ -64,9 +31,6 @@ const actions = (set: EmployeeSetFunction) => ({
 // Create Zustand Store with type checking for state
 export const useEmployeeStore = create<EmployeeState>((set) => ({
   employee: null,
-  stats: {},
-  isFetchingEmployee: false,
-  isSubmitting: false,
   actions: actions(set),
 }));
 

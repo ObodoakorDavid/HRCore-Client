@@ -7,14 +7,17 @@ import { formatDate, getStatusClasses } from "@/lib/utils";
 import { getEmployeeLeaves } from "@/api/leave.api";
 import { Link, useSearchParams } from "react-router-dom";
 import DataTable from "@/components/table";
+import { useEmployeeStore } from "@/store/useEmployeeStore";
 
 export default function EmployeeLeave() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
+  const { employee } = useEmployeeStore();
+
   const [searchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
-  
+
   const { data, isLoading } = useQuery({
     queryKey: ["employee-leaves", { page, limit }],
     queryFn: () => getEmployeeLeaves({ page, limit }),
@@ -23,39 +26,38 @@ export default function EmployeeLeave() {
   const columns = [
     {
       header: "Name",
-      accessor: "employee.name",
-      render: (_: any, row: any) => row.employee?.name || "N/A",
+      render: (row: any) => row.employee?.name || "N/A",
     },
     {
       header: "Line Manager",
       accessor: "lineManager.name",
-      render: (_: any, row: any) => row.lineManager?.name || "N/A",
+      render: (row: any) => row.lineManager?.name || "N/A",
     },
     {
       header: "Start Date",
-      accessor: "startDate",
-      render: (value: string) => {
-        return formatDate(value);
+      render: (row: any) => {
+        return <span>{formatDate(row.startDate)}</span>;
       },
     },
     {
       header: "Resumption Date",
-      accessor: "resumptionDate",
-      render: (value: string) => formatDate(value),
+      render: (row: any) => {
+        return <span>{formatDate(row.resumptionDate)}</span>;
+      },
     },
     {
       header: "Status",
-      accessor: "status",
-      isStatus: true,
-      render: (value: string) => (
-        <span className={`capitalize ${getStatusClasses(value)}`}>{value}</span>
+      render: (row: any) => (
+        <span className={`capitalize ${getStatusClasses(row.status)}`}>
+          {row.status}
+        </span>
       ),
     },
     {
       header: "Action",
-      render: (_: any, row: any) => (
+      render: (row: any) => (
         <div className="flex gap-2">
-          <Link to={`/dashboard/employee/leave/${row._id}`}>
+          <Link to={`/dashboard/employee/leave/leave-request/${row._id}`}>
             <Eye />
           </Link>
         </div>
@@ -66,11 +68,16 @@ export default function EmployeeLeave() {
   const openApplyModal = () => setIsApplyModalOpen(true);
   const closeApplyModal = () => setIsApplyModalOpen(false);
 
+  console.log(employee);
+
   return (
     <div className="">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-lg font-semibold">Leave History</h1>
-        <Button onClick={openApplyModal}>
+        <Button
+          className={`bg-[var(--tenant-primary)] hover:bg-[var(--tenant-primary)] hover:opacity-80`}
+          onClick={openApplyModal}
+        >
           <PlusCircle size={16} className="mr-2" />
           Apply for Leave
         </Button>

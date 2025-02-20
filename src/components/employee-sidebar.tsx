@@ -97,7 +97,7 @@ export default function EmployeeSidebar() {
       {/* Logo Section */}
       <div className="p-4 border-b flex items-center gap-2">
         <img
-          className="w-6 h-6"
+          className=" max-w-10 max-h-10"
           src={employee?.tenantId?.logo}
           alt={`${employee?.tenantId?.name} logo`}
         />

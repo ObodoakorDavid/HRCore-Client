@@ -52,23 +52,21 @@ export default function LeaveTypes() {
   const columns = [
     {
       header: "Leave Name",
-      accessor: "name",
-      render: (_: any, row: any) => row?.name || "N/A",
+      render: (row: any) => row?.name || "N/A",
     },
     {
       header: "Balance",
-      accessor: "defaultBalance",
-      render: (_: any, row: any) => `${row?.defaultBalance} days` || "N/A",
+      render: (row: any) => `${row?.defaultBalance} days` || "N/A",
       // render: (_: any, row: any) => row?.defaultBalance || "N/A",
     },
     {
       header: "In",
       accessor: "levelId",
-      render: (_: any, row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
+      render: (row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
     },
     {
       header: "Action",
-      render: (_: any, row: any) => (
+      render: (row: any) => (
         <div className="flex gap-2">
           <Button
             variant="outline"

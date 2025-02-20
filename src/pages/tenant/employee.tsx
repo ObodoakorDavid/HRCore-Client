@@ -62,32 +62,27 @@ export default function Employee() {
   const columns = [
     {
       header: "Name",
-      accessor: "name",
-      render: (_: any, row: any) => row?.name || "N/A",
+      render: (row: any) => row?.name || "N/A",
     },
     {
       header: "Email",
-      accessor: "email",
-      // render: (_: any, row: any) => row?.email || "N/A",
+      render: (row: any) => row?.email || "N/A",
     },
     {
       header: "Role",
-      accessor: "jobRole",
-      render: (_: any, row: any) => row.jobRole || "N/A",
+      render: (row: any) => row.jobRole || "N/A",
     },
     {
       header: "Level",
-      accessor: "levelId",
-      render: (_: any, row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
+      render: (row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
     },
     {
       header: "Joined",
-      accessor: "createdAt",
-      render: (_: any, row: any) => formatDate(row?.createdAt) || "N/A",
+      render: (row: any) => formatDate(row?.createdAt) || "N/A",
     },
     {
       header: "Action",
-      render: (_: any, row: any) => (
+      render: (row: any) => (
         <div className="flex gap-2">
           <Button
             onClick={() => {

@@ -33,27 +33,25 @@ export default function EmployeeInvites() {
   const columns = [
     {
       header: "Email",
-      accessor: "email",
+      render: (row: any) => row.email || "N/A",
     },
     {
       header: "Expires At",
       accessor: "expiresAt",
-      render: (_: any, row: any) => formatDate(row?.expiresAt) || "N/A",
+      render: (row: any) => formatDate(row?.expiresAt) || "N/A",
     },
     {
       header: "Status",
-      accessor: "status",
       isStatus: true,
-      render: (_: any, row: any) => (
-        <span className={`capitalize ${getStatusClasses(row?.status)}`}>
-          {row?.status}
+      render: (row: any) => (
+        <span className={`capitalize p-2 ${getStatusClasses(row.status)}`}>
+          {row.status}
         </span>
       ),
     },
     {
       header: "URL",
-      accessor: "url",
-      render: (_: any, row: any) => {
+      render: (row: any) => {
         return (
           <div className="flex items-center gap-2">
             <span className="truncate">{row?.url?.slice(0, 20)}</span>

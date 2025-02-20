@@ -6,20 +6,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getStatusClasses } from "@/lib/utils";
 import React from "react";
 import CustomPagination from "./custom-pagination";
-import { AuthLoader } from "./loader";
+import { Loader } from "./loader";
 
-interface Column<T> {
+interface Column {
   header: string;
-  accessor?: keyof T;
-  render?: (value: any, row: any) => React.ReactNode;
-  isStatus?: boolean;
+  render: (row: any) => React.ReactNode;
 }
 
 interface TableProps<T> {
-  columns: Column<T>[];
+  columns: Column[];
   data: T[];
   isLoading?: boolean;
   noDataMessage?: string;
@@ -40,7 +37,7 @@ export default function DataTable<T>({
   pagination,
 }: TableProps<T>) {
   if (isLoading) {
-    return <AuthLoader isLoading={isLoading} />;
+    return <Loader isLoading={isLoading} />;
   }
 
   if (!data.length) {
@@ -61,19 +58,9 @@ export default function DataTable<T>({
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex} className="hover:bg-gray-50">
               {columns.map((column, colIndex) => {
-                const value = row[column.accessor as keyof T];
-                const statusClass = column.isStatus
-                  ? getStatusClasses(value as string)
-                  : "";
-
                 return (
-                  <TableCell
-                    key={colIndex}
-                    className={`p-2 text-start ${statusClass}`}
-                  >
-                    {column.render
-                      ? column.render(value, row)
-                      : value?.toString() ?? "N/A"}
+                  <TableCell key={colIndex} className="text-start">
+                    {column.render(row)}
                   </TableCell>
                 );
               })}

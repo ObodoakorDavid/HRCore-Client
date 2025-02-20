@@ -5,6 +5,13 @@ export interface Tenant {
   logo: string;
 }
 
+export interface CreateTenant {
+  name: string;
+  email: string;
+  logo: File;
+  color: string;
+}
+
 export interface UpdateTenant {
   name: string | null;
   email: string;

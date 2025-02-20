@@ -9,7 +9,7 @@ import { UserCheck, UserX } from "lucide-react";
 
 export default function EmployeeProfile() {
   const { employee } = useEmployeeStore();
-  const { getEmployeeDetails } = useEmployeeActions();
+  const { getAuthEmployee } = useEmployeeActions();
 
   // const { data: leaveBalance } = useQuery({
   //   queryKey: ["leaveBalance"],
@@ -30,7 +30,8 @@ export default function EmployeeProfile() {
   const { mutate, isPending } = useMutation({
     mutationFn: updateEmployeeProfileAPI,
     onSuccess: () => {
-      getEmployeeDetails();
+      toast.success("Profile updated successfully");
+      getAuthEmployee();
     },
     onError: (error) => {
       if (error instanceof Error) {
@@ -57,6 +58,7 @@ export default function EmployeeProfile() {
               onClick={() => {
                 handleReturnFromLeave();
               }}
+              className={`bg-[var(--tenant-primary)] hover:bg-[var(--tenant-primary)] hover:opacity-80`}
             >
               Are you back? Update your status
             </Button>
@@ -70,7 +72,13 @@ export default function EmployeeProfile() {
           </p>
         </div>
         <Link to={"/dashboard/employee/profile/update"}>
-          <Button>Update Profile</Button>
+          <Button
+            style={{
+              backgroundColor: employee?.tenantId?.color || "black",
+            }}
+          >
+            Update Profile
+          </Button>
         </Link>
       </div>
       <div

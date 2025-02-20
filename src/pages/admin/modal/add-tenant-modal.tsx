@@ -3,35 +3,50 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/modal";
 import { Input } from "@/components/ui/input";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addTenant } from "@/api/admin.api";
+import { toast } from "sonner";
 
 interface AddTenantFormValues {
   name: string;
   email: string;
-  logo: File;
+  logo: FileList;
   color: string;
 }
 
 interface AddTenantModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => void;
-  isSubmitting: boolean;
 }
 
-const AddTenantModal: FC<AddTenantModalProps> = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  isSubmitting,
-}) => {
+const AddTenantModal: FC<AddTenantModalProps> = ({ isOpen, onClose }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<AddTenantFormValues>();
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addTenant,
+    onSuccess: () => {
+      toast.success("Client added sucessfully");
+      reset();
+      onClose();
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error(error.message || "Failed to add tenant");
+    },
+  });
+
   const handleFormSubmit: SubmitHandler<AddTenantFormValues> = (data) => {
-    onSubmit(data);
+    const logo = data.logo[0];
+    const newTenant = { ...data, logo };
+    mutate(newTenant);
   };
 
   return (
@@ -80,8 +95,8 @@ const AddTenantModal: FC<AddTenantModalProps> = ({
             <p className="text-red-500 text-sm">{errors.color.message}</p>
           )}
         </div>
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting ? "Submitting..." : "Add Tenant"}
+        <Button type="submit" disabled={isPending} className="w-full">
+          {isPending ? "Submitting..." : "Add Tenant"}
         </Button>
       </form>
     </Modal>

@@ -10,7 +10,6 @@ import { handleFetchEmployees } from "@/lib/utils";
 import { updateEmployeeProfileAPI } from "@/api/employee.api";
 import { toast } from "sonner";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
-import { Employee } from "@/types/employee.types";
 
 export interface formInputs {
   name: string | null;
@@ -45,10 +44,8 @@ export default function EmployeeProfileUpdate() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateEmployeeProfileAPI,
-    onSuccess: (employee: Employee) => {
-      console.log(employee);
-
-      setAuthEmployee(employee);
+    onSuccess: ({ employee, leaveBalances }) => {
+      setAuthEmployee({ ...employee, leaveBalances });
       navigate("/dashboard/employee/profile");
     },
     onError: (error) => {
@@ -159,7 +156,11 @@ export default function EmployeeProfileUpdate() {
         </div>
 
         <div className="flex justify-end">
-          <Button disabled={isPending} type="submit">
+          <Button
+            disabled={isPending}
+            type="submit"
+            className={`bg-[var(--tenant-primary)] hover:bg-[var(--tenant-primary)] hover:opacity-80`}
+          >
             {isPending ? "Saving..." : "Save Changes"}
           </Button>
         </div>

@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import axiosInstance from "../lib/axios.config";
 import { UpdateEmployee } from "@/types/employee.types";
 import { Params } from "@/types/params.types";
-import { NavigateFunction } from "react-router-dom";
 
 export const getAllEmployees = async (params: Params) => {
   try {
@@ -11,7 +10,6 @@ export const getAllEmployees = async (params: Params) => {
     const pagination = response?.data?.pagination;
 
     return { employees, pagination };
-    return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
       throw new Error(
@@ -32,48 +30,6 @@ export const getEmployeeDetails = async (employeeId: string | undefined) => {
     if (error instanceof AxiosError) {
       throw new Error(
         error.response?.data?.message || "Failed to fetch employee"
-      );
-    }
-    throw error;
-  }
-};
-
-export const getLoggedInEmployee = async (
-  navigate: NavigateFunction,
-  updateEmployee: (employee: any) => void
-) => {
-  try {
-    const response = await axiosInstance.get(`/employee/auth`);
-    // const employee = response?.data?.data?.employee;
-    // updateEmployee(employee);
-
-    const employee = response?.data?.data?.employee;
-    const leaveBalances = response?.data?.data?.leaveBalances;
-    updateEmployee({ ...employee, leaveBalances });
-    return employee;
-  } catch (error) {
-    navigate("/login");
-    throw error;
-  }
-};
-
-export const updateEmployeeProfileAPI = async (
-  data: Partial<UpdateEmployee>
-) => {
-  try {
-    console.log(data);
-
-    const response = await axiosInstance.put(`/employee/auth`, data, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    const employee = response?.data?.data?.employee;
-    return employee;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(
-        error.response?.data?.message || "Failed to update profile"
       );
     }
     throw error;
@@ -170,25 +126,45 @@ export const employeeSignIn = async (payload: {
   }
 };
 
-// export const employeeSignOut = async () => {
-//   try {
-//     const response = await axiosInstance.post(`/employee/auth/signin`);
+export const getLoggedInEmployee = async (
+  updateEmployee: (employee: any) => void
+) => {
+  try {
+    const response = await axiosInstance.get(`/employee/auth`);
+    // const employee = response?.data?.data?.employee;
+    // updateEmployee(employee);
 
-//     const token = response?.data?.data?.token;
-//     const tenantId = response?.data?.data?.employee?.tenantId;
-//     // const employee = response?.data?.data?.employee;
+    const employee = response?.data?.data?.employee;
+    const leaveBalances = response?.data?.data?.leaveBalances;
+    updateEmployee({ ...employee, leaveBalances });
+    return employee;
+  } catch (error) {
+    throw error;
+  }
+};
 
-//     localStorage.setItem("token", token);
-//     localStorage.setItem("tenant-id", tenantId);
+export const updateEmployeeProfileAPI = async (
+  data: Partial<UpdateEmployee>
+) => {
+  try {
+    console.log(data);
 
-//     return response.data;
-//   } catch (error) {
-//     if (error instanceof AxiosError) {
-//       throw new Error(error.response?.data?.message || "Failed to log in");
-//     }
-//     throw error;
-//   }
-// };
+    const response = await axiosInstance.put(`/employee/auth`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    const { employee, leaveBalances } = response?.data?.data;
+    return { employee, leaveBalances };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(
+        error.response?.data?.message || "Failed to update profile"
+      );
+    }
+    throw error;
+  }
+};
 
 export const forgotPasswordRequest = async (payload: { email: string }) => {
   console.log(payload);

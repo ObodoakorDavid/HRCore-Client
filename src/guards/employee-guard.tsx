@@ -2,11 +2,9 @@ import { getLoggedInEmployee } from "@/api/employee.api";
 import { AuthLoader } from "@/components/loader";
 import { useEmployeeActions, useEmployeeStore } from "@/store/useEmployeeStore";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 export default function EmployeeGuard() {
-  const navigate = useNavigate();
-
   const { setAuthEmployee } = useEmployeeActions();
 
   const {
@@ -15,7 +13,7 @@ export default function EmployeeGuard() {
     isError,
   } = useQuery({
     queryKey: ["employee"],
-    queryFn: () => getLoggedInEmployee(navigate, setAuthEmployee),
+    queryFn: () => getLoggedInEmployee(setAuthEmployee),
     retry: false,
   });
 
@@ -26,6 +24,11 @@ export default function EmployeeGuard() {
   if (isError || !employee) {
     return <Navigate to="/login" replace />;
   }
+
+  document.documentElement.style.setProperty(
+    "--tenant-primary",
+    employee.tenantId?.color || "black"
+  );
 
   return <Outlet />;
 }

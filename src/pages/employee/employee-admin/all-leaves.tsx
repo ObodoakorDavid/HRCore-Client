@@ -19,39 +19,38 @@ export default function AllLeaves() {
   const columns = [
     {
       header: "Name",
-      accessor: "employee.name",
-      render: (_: any, row: any) => row.employee?.name || "N/A",
+      render: (row: any) => row.employee?.name || "N/A",
     },
     {
       header: "Line Manager",
       accessor: "lineManager.name",
-      render: (_: any, row: any) => row.lineManager?.name || "N/A",
+      render: (row: any) => row.lineManager?.name || "N/A",
     },
     {
       header: "Start Date",
-      accessor: "startDate",
-      render: (value: string) => {
-        return formatDate(value);
+      render: (row: any) => {
+        return <span>{formatDate(row.startDate)}</span>;
       },
     },
     {
       header: "Resumption Date",
-      accessor: "resumptionDate",
-      render: (value: string) => formatDate(value),
+      render: (row: any) => {
+        return <span>{formatDate(row.resumptionDate)}</span>;
+      },
     },
     {
       header: "Status",
-      accessor: "status",
-      isStatus: true,
-      render: (value: string) => (
-        <span className={`capitalize ${getStatusClasses(value)}`}>{value}</span>
+      render: (row: any) => (
+        <span className={`capitalize ${getStatusClasses(row.status)}`}>
+          {row.status}
+        </span>
       ),
     },
     {
       header: "Action",
-      render: (_: any, row: any) => (
+      render: (row: any) => (
         <div className="flex gap-2">
-          <Link to={`/dashboard/employee/all-leaves/${row._id}`}>
+          <Link to={`/dashboard/employee/leave/leave-request/${row._id}`}>
             <Eye />
           </Link>
         </div>

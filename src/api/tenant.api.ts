@@ -127,7 +127,7 @@ export const getAuthTenant = async (
     updateTenant(tenant);
     return response.data?.data;
   } catch (error) {
-    navigate("/tenant/login");
+    navigate("/client/login");
     throw error;
   }
 };

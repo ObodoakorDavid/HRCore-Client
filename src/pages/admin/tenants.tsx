@@ -1,47 +1,70 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import AddTenantModal from "./modal/add-tenant-modal";
-import { useAdminActions, useAdminStore } from "@/store/useAdminStore";
 import { ClipboardCopy } from "lucide-react";
-
-// Define the Tenant type interface
-interface Tenant {
-  _id: string;
-  name: string;
-  email: string;
-  color: string;
-  logo: string;
-}
-
-interface CreateTenant {
-  name: string;
-  email: string;
-  color: string;
-  logo: FileList;
-}
+import { useQuery } from "@tanstack/react-query";
+import { getAllTenants } from "@/api/admin.api";
+import { useSearchParams } from "react-router-dom";
+import DataTable from "@/components/table";
 
 export default function Tenants() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { tenants, isSubmitting } = useAdminStore();
-  const { getTenants, addTenant } = useAdminActions();
 
-  useEffect(() => {
-    getTenants({ page: 1, limit: 10 });
-  }, [getTenants]);
+  const [searchParams] = useSearchParams();
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["tenants", { page, limit }],
+    queryFn: () => getAllTenants({ page, limit }),
+  });
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleAddTenant = async (data: CreateTenant) => {
-    console.log({ ...data, logo: data.logo[0] });
-
-    await addTenant({ ...data, logo: data.logo[0] }, () => {
-      closeModal();
-      toast.success("Tenant added successfully!");
-      getTenants({ page: 1, limit: 10 });
-    });
-  };
+  const columns = [
+    {
+      header: "Name",
+      render: (row: any) => <span>{row.name || "N/A"}</span>,
+    },
+    {
+      header: "Tenant Id",
+      render: (row: any) => (
+        <span className="flex gap-2">
+          {row._id}
+          <ClipboardCopy
+            className="w-4 h-4 cursor-pointer text-gray-500 hover:text-black"
+            onClick={() => handleCopyToClipboard(row._id)}
+          />
+        </span>
+      ),
+    },
+    {
+      header: "Email",
+      render: (row: any) => row.email || "N/A",
+    },
+    {
+      header: "Color",
+      render: (row: any) => (
+        <span
+          style={{
+            backgroundColor: row.color,
+          }}
+          className="p-2"
+        >
+          {row.color}
+        </span>
+      ),
+    },
+    {
+      header: "Logo",
+      isStatus: true,
+      render: (row: any) => (
+        <img src={row.logo} className="w-8 h-8 rounded-full" />
+      ),
+    },
+  ];
 
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -55,52 +78,15 @@ export default function Tenants() {
         <Button onClick={openModal}>Add New Tenant</Button>
       </div>
 
-      <table className="min-w-full bg-white border rounded-md shadow">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="text-left p-2 border">Name</th>
-            <th className="text-left p-2 border">Tenant ID</th>
-            <th className="text-left p-2 border">Email</th>
-            <th className="text-left p-2 border">Color</th>
-            <th className="text-left p-2 border">Logo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tenants.map((tenant: Tenant) => (
-            <tr key={tenant._id} className="hover:bg-gray-50">
-              <td className="text-left p-2 border">{tenant.name}</td>
-              <td className="text-left p-2 border flex items-center gap-2">
-                {tenant._id}
-                <ClipboardCopy
-                  className="w-4 h-4 cursor-pointer text-gray-500 hover:text-black"
-                  onClick={() => handleCopyToClipboard(tenant._id)}
-                />
-              </td>
-              <td className="text-left p-2 border">{tenant.email}</td>
-              <td
-                className="text-left p-2 border"
-                style={{ backgroundColor: tenant.color }}
-              >
-                {tenant.color}
-              </td>
-              <td className="text-left p-2 border">
-                <img
-                  src={tenant.logo}
-                  alt={tenant.name}
-                  className="w-8 h-8 rounded-full"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <AddTenantModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onSubmit={handleAddTenant}
-        isSubmitting={isSubmitting}
+      <DataTable
+        columns={columns}
+        data={data?.tenants || []}
+        isLoading={isLoading}
+        noDataMessage="No tenants found."
+        pagination={data?.pagination}
       />
+
+      <AddTenantModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 }

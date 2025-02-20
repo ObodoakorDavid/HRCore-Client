@@ -47,7 +47,7 @@ function App() {
     },
     //Tenant Routes
     {
-      path: "/tenant/login",
+      path: "/client/login",
       element: <TenantLogin />,
     },
     {

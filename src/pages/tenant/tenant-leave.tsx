@@ -18,30 +18,26 @@ export default function TenantLeave() {
   const columns = [
     {
       header: "Name",
-      // accessor: "employee.name",
-      render: (_: any, row: any) => row?.employee?.name || "N/A",
+      render: (row: any) => row?.employee?.name || "N/A",
     },
     {
       header: "Line Manager",
-      // accessor: "lineManager",
-      render: (_: any, row: any) => row?.lineManager?.name || "N/A",
+      render: (row: any) => row?.lineManager?.name || "N/A",
     },
     {
       header: "Start Data",
-      // accessor: "startDate",
-      render: (_: any, row: any) => formatDate(row?.startDate) || "N/A",
+      render: (row: any) => formatDate(row?.startDate) || "N/A",
     },
     {
       header: "Resumption Date",
-      // accessor: "resumptionDate",
-      render: (_: any, row: any) => formatDate(row?.resumptionDate) || "N/A",
+      render: (row: any) => formatDate(row?.resumptionDate) || "N/A",
     },
     {
       header: "Status",
-      accessor: "status",
-      isStatus: true,
-      render: (_: any, row: any) => (
-        <span className={`capitalize ${getStatusClasses(row?.status)}`}>
+      render: (row: any) => (
+        <span
+          className={`capitalize p-4 w-full ${getStatusClasses(row?.status)}`}
+        >
           {row?.status}
         </span>
       ),

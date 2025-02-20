@@ -268,13 +268,17 @@ export default function ApplyLeaveModal({
           <div className="flex justify-end gap-2">
             <Button
               type="button"
-              variant="outline"
+              variant="destructive"
               onClick={onClose}
               disabled={isPending}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button
+              type="submit"
+              disabled={isPending}
+              className={`bg-[var(--tenant-primary)] hover:bg-[var(--tenant-primary)] hover:opacity-80`}
+            >
               {isPending ? "Submitting..." : "Submit"}
             </Button>
           </div>

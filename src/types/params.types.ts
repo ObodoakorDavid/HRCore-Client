@@ -1,5 +1,5 @@
 export interface Params {
-  page: number;
-  limit: number;
+  page: number | string;
+  limit: number | string;
   search?: string;
 }

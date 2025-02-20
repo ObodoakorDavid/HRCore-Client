@@ -23,7 +23,7 @@ export default function TenantGuard() {
   }
 
   if (isError || !tenant) {
-    return <Navigate to="/tenant/login" replace />;
+    return <Navigate to="/client/login" replace />;
   }
 
   return <Outlet />;
