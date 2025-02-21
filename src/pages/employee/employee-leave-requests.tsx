@@ -25,12 +25,13 @@ export default function EmployeeLeaveRequests() {
   const columns = [
     {
       header: "Name",
-      render: (row: any) => row.employee?.name || "N/A",
+      render: (row: any) => row.employee?.name || row.employee?.email || "N/A",
     },
     {
       header: "Line Manager",
       accessor: "lineManager.name",
-      render: (row: any) => row.lineManager?.name || "N/A",
+      render: (row: any) =>
+        row.lineManager?.name || row.lineManager?.email || "N/A",
     },
     {
       header: "Start Date",

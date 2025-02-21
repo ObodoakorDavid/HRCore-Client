@@ -28,10 +28,12 @@ export interface Leave {
   employee: {
     _id: string;
     name: string;
+    email: string;
   };
   lineManager: {
     _id: string;
     name: string;
+    email: string;
   };
   leaveType: {
     _id: string;

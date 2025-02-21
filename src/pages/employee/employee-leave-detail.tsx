@@ -70,9 +70,18 @@ export default function EmployeeLeaveDetail() {
       <h1 className=" text-2xl font-semibold">Leave Details</h1>
       <div className="flex flex-col gap-1 mt-5">
         <p>
-          <strong>Employee Name:</strong> {leaveRequest?.employee?.name}
+          <strong>Employee Name:</strong>{" "}
+          {leaveRequest?.employee?.name ||
+            leaveRequest?.employee?.email ||
+            "N/A"}
         </p>
-        <p className=" capitalize">
+        <p>
+          <strong>Employee Name:</strong>{" "}
+          {leaveRequest?.lineManager?.name ||
+            leaveRequest?.lineManager?.email ||
+            "N/A"}
+        </p>
+        <p className="capitalize">
           <strong>Leave Type:</strong> {leaveRequest?.leaveType?.name}
         </p>
         <p>
@@ -80,7 +89,7 @@ export default function EmployeeLeaveDetail() {
           {formatDate(leaveRequest?.startDate || "")}
         </p>
         <p>
-          <strong>End Date:</strong>{" "}
+          <strong>Resumption Date:</strong>{" "}
           {formatDate(leaveRequest?.resumptionDate || "")}
         </p>
         <p>
