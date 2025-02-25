@@ -48,7 +48,7 @@ export default function EmployeeLeaveRequests() {
     {
       header: "Status",
       render: (row: any) => (
-        <span className={`capitalize ${getStatusClasses(row.status)}`}>
+        <span className={`capitalize p-2 ${getStatusClasses(row.status)}`}>
           {row.status}
         </span>
       ),

@@ -70,11 +70,23 @@ export default function ApplyLeaveModal({
   }, [duration, startDate]);
 
   function calculateResumptionDate(startDate: Date | string, duration: number) {
-    const start = new Date(startDate); // Create a new Date object to avoid mutating the original date
-    start.setDate(start.getDate() + duration);
-    start.setDate(start.getDate() + 1);
-    const resumptionDate = start.toLocaleDateString("en-CA");
-    return resumptionDate;
+    // const start = new Date(startDate); // Create a new Date object to avoid mutating the original date
+    // start.setDate(start.getDate() + duration);
+    // start.setDate(start.getDate() + 1);
+    // const resumptionDate = start.toLocaleDateString("en-CA");
+    // return resumptionDate;
+    let start = new Date(startDate);
+    let addedDays = 0;
+
+    while (addedDays < duration) {
+      start.setDate(start.getDate() + 1);
+      // Skip weekends (Saturday = 6, Sunday = 0)
+      if (start.getDay() !== 0 && start.getDay() !== 6) {
+        addedDays++;
+      }
+    }
+
+    return start.toLocaleDateString("en-CA"); // Returns in YYYY-MM-DD format
   }
 
   const { mutate, isPending } = useMutation({

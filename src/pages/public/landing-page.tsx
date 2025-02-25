@@ -17,7 +17,7 @@ export default function LandingPage() {
               <Button variant={"ghost"}>Login</Button>
             </Link>
             <Link
-              to="/tenant/login"
+              to="/client/login"
               // className="bg-white text-black font-semibold px-4 py-2 rounded-lg"
             >
               <Button variant={"ghost"}>Client Login</Button>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-
-import { cn } from "@/lib/utils";
+import { capitalizeWords, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -83,7 +82,7 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
             aria-expanded={open}
             className="w-full justify-between"
           >
-            {value ? value : placeholder}
+            {value ? capitalizeWords(value) : placeholder}
             <ChevronsUpDown className="opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -110,7 +109,7 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
                       key={option.value}
                       value={option.label}
                       onSelect={(currentValue) => {
-                        setValue(currentValue === value ? "" : currentValue);
+                        setValue(currentValue === value ? value : currentValue);
                         if (onChange) {
                           onChange(option.value);
                         }

@@ -108,3 +108,10 @@ export function getStatusClasses(status: string | undefined | null) {
       return "bg-gray-100 text-gray-800";
   }
 }
+
+export function capitalizeWords(str: string): string {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}

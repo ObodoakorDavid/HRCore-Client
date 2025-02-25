@@ -76,7 +76,7 @@ export default function Levels() {
               <React.Fragment key={level._id}>
                 <tr className="hover:bg-gray-50 border-gray-200 border-2">
                   <td className="text-left p-2 border flex items-center gap-2 capitalize">
-                    <button
+                    <Button
                       className="flex items-center"
                       onClick={() => toggleExpand(level._id)}
                     >
@@ -85,7 +85,7 @@ export default function Levels() {
                       ) : (
                         <ChevronRight size={16} />
                       )}
-                    </button>
+                    </Button>
                     {level.name}
                   </td>
                   <td className="text-left p-2 border flex items-center gap-2">

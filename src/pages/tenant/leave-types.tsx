@@ -52,17 +52,22 @@ export default function LeaveTypes() {
   const columns = [
     {
       header: "Leave Name",
-      render: (row: any) => row?.name || "N/A",
+      render: (row: any) => (
+        <span className="capitalize">{row?.name || "N/A"}</span>
+      ),
     },
     {
       header: "Balance",
       render: (row: any) => `${row?.defaultBalance} days` || "N/A",
-      // render: (_: any, row: any) => row?.defaultBalance || "N/A",
     },
     {
       header: "In",
       accessor: "levelId",
-      render: (row: any) => (row?.levelId ? row?.levelId?.name : "N/A"),
+      render: (row: any) => (
+        <span className=" capitalize">
+          {row?.levelId ? row?.levelId?.name : "N/A"}
+        </span>
+      ),
     },
     {
       header: "Action",
